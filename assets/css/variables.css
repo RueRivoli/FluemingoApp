@@ -1,0 +1,49 @@
+/**
+ * Couleurs et tokens de design — à réutiliser dans toute l'app
+ * Usage: color: var(--color-primary); background: var(--color-primary);
+ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-sans: 'M PLUS Rounded 1c', system-ui, -apple-system, sans-serif;
+
+  /* Couleurs principales */
+  --color-primary: #849bff;
+  --color-primary-dark: #5a67d8;
+  --color-secondary: #F6D75A;
+  --color-secondary-dark: #6b4399;
+  --color-neutral: #1A1A1A;
+
+  /* Dégradé (hero, CTA, boutons) */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+
+  /* Texte */
+  --color-text: #1A1A1A;
+  --color-text-muted: #374151;
+  --color-text-light: #555;
+
+  --color-background: #F5F5F5;
+  /* Fond */
+  --color-bg: #ffffff;
+  --color-bg-muted: #f8f9fa;
+  --color-bg-dark: #1a1a1a;
+
+  /* Bordures */
+  --color-border: rgba(102, 126, 234, 0.1);
+  --color-border-muted: #eee;
+
+  /* Utilitaires (optionnel) */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+}
+
+body {
+  font-family: var(--font-sans);
+}
