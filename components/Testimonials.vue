@@ -2,7 +2,13 @@
 const DICEBEAR_API = 'https://api.dicebear.com/9.x/open-peeps/svg'
 
 function avatarUrl(seed: string) {
-  return `${DICEBEAR_API}?seed=${encodeURIComponent(seed)}`
+  const params = new URLSearchParams({
+    seed,
+    radius: '50',           // full circle shape
+    size: '80',             // match display size for sharp rendering
+    backgroundColor: 'e8e1e1', // soft neutral background
+  })
+  return `${DICEBEAR_API}?${params.toString()}`
 }
 
 const testimonials = [
@@ -41,8 +47,8 @@ const getDate = (date: string) => {
     <div class="features-grid">
       <article v-for="(feature, i) in testimonials" :key="i" class="feature-card">
         <div class="feature-card-header">
-          <img :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="48" height="48" />
-          <div>
+          <img :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="80" height="80" loading="lazy" />
+          <div class="feature-card-meta">
             <h3 class="feature-title">{{ feature.name }}</h3>
             <span class="feature-date">{{ getDate(feature.date) }}</span>
           </div>
@@ -57,6 +63,10 @@ const getDate = (date: string) => {
             <div><i class="fa-light fa-quote-left mr-2"></i></div>
             <div class="feature-review">{{ feature.review }}</div>
             <div class="feature-quote-right"><i class="fa-light fa-quote-right ml-2"></i></div>
+        </div>
+        <div class="feature-name">
+            <h3 class="feature-title">{{ feature.name }}</h3>
+            <span class="feature-date">{{ getDate(feature.date) }}</span>
         </div>
       </article>
     </div>
@@ -103,11 +113,13 @@ const getDate = (date: string) => {
 }
 
 .feature-avatar {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 2px solid var(--color-border, #eee);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .feature-review {
@@ -115,7 +127,7 @@ const getDate = (date: string) => {
   color: white;
   background-color: var(--color-primary);
   border: 1px solid var(--color-border);
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 0.5rem;
 }
 .feature-device-text {

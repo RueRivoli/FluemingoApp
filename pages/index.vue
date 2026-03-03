@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import Hero from '../components/Hero.vue';
 import Footer from '../components/Footer.vue';
-import Functionnalities from '../components/Features.vue';
-
+import Banner from '../components/Banner.vue';
 // À personnaliser selon ton app
 const appName = 'Fluemingo'
 const appTagline = 'Learn French with Fun'
@@ -18,6 +17,8 @@ const supportUrl = '' // ex: 'mailto:support@example.com'
     <Hero :app-store-url="appStoreUrl" />
     <Features />
     <Testimonials />
+    <!-- <Updates /> -->
+    <Banner />
     <Footer/>
   </div>
 </template>

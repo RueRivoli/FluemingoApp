@@ -10,7 +10,7 @@ const currentYear = new Date().getFullYear();
         <ul>
           <h3 class="footer-links-item-title">The App</h3>
           <li>
-            <a href="https://www.fluemingo.com/terms" target="_blank" rel="noopener">Download the App</a>
+            <a href="https://apps.apple.com/us/app/fluemingo/id6764131340" target="_blank" rel="noopener">Download the App</a>
           </li>
             <li>
               <a href="#features" rel="noopener">Features</a>
@@ -32,19 +32,16 @@ const currentYear = new Date().getFullYear();
             <li>
               <a href="https://www.fluemingo.com/terms" target="_blank" rel="noopener">Contact</a>
             </li>
-            <li>
-              <a href="https://www.fluemingo.com/terms" target="_blank" rel="noopener">Legal</a>
-            </li>
         </ul>
       </div>
       <div class="footer-links-item">
         <ul>
           <h3 class="footer-links-item-title">Legal</h3>
           <li>
-            <a href="https://www.fluemingo.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
           </li>
           <li>
-            <a href="https://www.fluemingo.com/terms" target="_blank" rel="noopener">Terms of Service</a>
+            <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>
           </li>
         </ul>
       </div>
