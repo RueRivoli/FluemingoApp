@@ -15,25 +15,23 @@ const props = withDefaults(
     <div class="banner">
         <div class="banner-content">
             <div class="banner-content-left">
-                <p>
-                    <ul>
-                        <li>
-                            10+ News Articles per week
-                        </li>
-                        <li>
-                            5+ New Audiobooks per week
-                        </li>
-                        <li>
-                            Flashcards to learn vocabulary
-                        </li>
-                        <li>
-                            Progress tracking
-                        </li>
-                        <li>
-                            Recommendations
-                        </li>
-                    </ul>
-                </p>
+                <ul>
+                    <li>
+                        10+ News Articles per week
+                    </li>
+                    <li>
+                        5+ New Audiobooks per week
+                    </li>
+                    <li>
+                        Flashcards to learn vocabulary
+                    </li>
+                    <li>
+                        Progress tracking
+                    </li>
+                    <li>
+                        Recommendations
+                    </li>
+                </ul>
                 <div class="store-badges">
                     <div>
                     <a
@@ -60,7 +58,7 @@ const props = withDefaults(
                 </div>
             </div>
             <div class="banner-content-right">
-                <img src="/screenshots/flamingo.png" width="800" height="auto" alt="Banner" loading="lazy" />
+                <img src="/screenshots/flamingo-min.png" width="1000" height="auto" alt="Banner" loading="lazy" />
             </div>
         </div>
     </div>
