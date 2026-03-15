@@ -53,6 +53,9 @@ const getDate = (date: string) => {
             <span class="feature-date">{{ getDate(feature.date) }}</span>
           </div>
         </div>
+        <div class="feature-stars">
+          <i v-for="n in feature.mark" :key="n" class="fa-solid fa-star feature-star"></i>
+        </div>
         <div class="feature-device">Device: 
             <span class="feature-device-text">
                 <i class="fa-light fa-mobile mr-1"></i>
@@ -130,6 +133,16 @@ const getDate = (date: string) => {
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
+.feature-stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.feature-star {
+  color: var(--color-secondary, #F6D75A);
+  font-size: 1rem;
+}
+
 .feature-device-text {
   font-size: 0.8rem;
   color: var(--color-text-muted);

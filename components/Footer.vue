@@ -30,7 +30,7 @@ const currentYear = new Date().getFullYear();
             <a href="/blog" rel="noopener">Blog</a>
           </li> -->
             <li>
-              <a href="https://www.fluemingo.com/terms" target="_blank" rel="noopener">Contact</a>
+              <a href="/contact" rel="noopener">Contact</a>
             </li>
         </ul>
       </div>

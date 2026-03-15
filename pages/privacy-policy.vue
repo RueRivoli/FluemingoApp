@@ -17,14 +17,14 @@ import NavBar from '../components/NavBar.vue';
                 Fluemingo is operated by FlueHero, a trading name of Florent GALLOIS, registered as a sole trader (auto-entrepreneur) in France under SIRET n°82308601200023.<br/>
                 Publisher: FlueHero<br>
                 Application: Fluemingo<br>
-                For any questions regarding this Privacy Policy, you may contact us at: privacy@fluemingo.com
+                For any questions regarding this Privacy Policy, you may contact us at: contact@fluemingo-app.com
             </p>
         </div>
         <div class="privacy-policy-content-item">
             <h3>2. Data We Collect</h3>
             <p>Publisher: FlueHero<br>
                 Application: Fluemingo<br>
-                For any questions regarding this Privacy Policy, you may contact us at: privacy@fluemingo.com
+                For any questions regarding this Privacy Policy, you may contact us at: contact@fluemingo-app.com
             </p>
         </div>
         <div class="privacy-policy-content-item">
@@ -105,7 +105,7 @@ import NavBar from '../components/NavBar.vue';
                     <li>Right to restriction: request the temporary suspension of processing.</li>
                 </ul>
                 <p>
-                    To exercise these rights, contact us at: privacy@fluemingo.com. We will respond within 30 days.
+                    To exercise these rights, contact us at: contact@fluemingo-app.com. We will respond within 30 days.
                 </p>
             </div>
             <div class="privacy-policy-content-item">
@@ -130,7 +130,7 @@ import NavBar from '../components/NavBar.vue';
                 <h3>13. Contact & Complaints</h3>
                 For any questions or complaints regarding the handling of your personal data, you may contact us:
                 <ul>
-                    <li>By email: privacy@fluemingo.com</li>
+                    <li>By email: contact@fluemingo-app.com</li>
                 </ul>
                 You also have the right to lodge a complaint with the supervisory authority in your country (e.g., in France: CNIL – www.cnil.fr; in the UK: ICO – www.ico.org.uk).
             </div>

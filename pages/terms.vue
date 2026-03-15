@@ -20,7 +20,7 @@ import Footer from '../components/Footer.vue';
             <h3>2. Publisher</h3>
             <p>Fluemingo is published and operated by FlueHero, a trading name registered in France as a sole trader (auto-entrepreneur).<br>
                 Application: Fluemingo<br>
-                Contact: legal@fluemingo.com
+                Contact: contact@fluemingo-app.com
             </p>
         </div>
         <div class="terms-item">
@@ -45,7 +45,7 @@ import Footer from '../components/Footer.vue';
         </div>
         <div class="terms-item-subsection">
             <h4>5.2 Account Security</h4>
-            <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account at: legal@fluemingo.com</p>
+            <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account at: contact@fluemingo-app.com</p>
         </div>
         <div class="terms-item-subsection">
             <h4>5.3 Account Termination</h4>
@@ -99,7 +99,7 @@ import Footer from '../components/Footer.vue';
         </div>
         <div class="terms-item">
             <h3>15. Contact</h3>
-            <p>For any questions regarding these Terms of Service, please contact us at: <a href="mailto:legal@fluemingo.com">legal@fluemingo.com</a></p>
+            <p>For any questions regarding these Terms of Service, please contact us at: <a href="mailto:contact@fluemingo-app.com">contact@fluemingo-app.com</a></p>
         </div>
     </div>
     <Footer />

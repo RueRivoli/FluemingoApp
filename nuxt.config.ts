@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      formspreeEndpoint: process.env.NUXT_PUBLIC_FORMSPREE_ENDPOINT || '',
+    },
+  },
   css: ['~/assets/css/variables.css', '@fortawesome/fontawesome-pro/css/all.min.css'],
   app: {
     head: {
@@ -11,6 +16,10 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Geom:ital,wght@0,300..900;1,300..900&family=M+PLUS+Rounded+1c&family=Playwrite+NZ+Basic+Guides&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap',
