@@ -6,7 +6,13 @@ export default defineNuxtConfig({
       formspreeEndpoint: process.env.NUXT_PUBLIC_FORMSPREE_ENDPOINT || '',
     },
   },
-  css: ['~/assets/css/variables.css', '@fortawesome/fontawesome-pro/css/all.min.css'],
+  css: [
+    '~/assets/css/variables.css',
+    '@fortawesome/fontawesome-pro/css/fontawesome.min.css',
+    '@fortawesome/fontawesome-pro/css/solid.min.css',
+    '@fortawesome/fontawesome-pro/css/light.min.css',
+    '@fortawesome/fontawesome-pro/css/duotone.min.css',
+  ],
   app: {
     head: {
       title: 'Fluemingo App — Learn & Progress Faster',
@@ -22,7 +28,7 @@ export default defineNuxtConfig({
         { rel: 'manifest', href: '/site.webmanifest' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Geom:ital,wght@0,300..900;1,300..900&family=M+PLUS+Rounded+1c&family=Playwrite+NZ+Basic+Guides&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap',
         },
       ],
     },

@@ -54,7 +54,7 @@ const features = [
       <article class="feature-item" v-for="(feature, i) in features" :key="i">
         <div class="feature-card">
           <div class="feature-img-container">
-            <img :src="feature.img" :alt="feature.title" class="feature-img" width="400" height="300" loading="lazy" />
+            <!-- <img :src="feature.img" :alt="feature.title" class="feature-img" width="400" height="300" loading="lazy" /> -->
           </div>
           <div class="feature-card-header">
             <span class="feature-icon">

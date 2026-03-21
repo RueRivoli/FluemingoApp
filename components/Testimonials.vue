@@ -64,7 +64,7 @@ const getDate = (date: string) => {
       <div class="testimonials-track">
         <article v-for="(feature, i) in [...testimonials, ...testimonials]" :key="`${i}-${feature.name}`" class="feature-card">
         <div class="feature-card-header">
-          <img :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="80" height="80" loading="lazy" />
+          <!-- <img :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="80" height="80" loading="lazy" /> -->
           <div class="feature-card-meta">
             <h3 class="feature-title">{{ feature.name }}</h3>
             <span class="feature-date">{{ getDate(feature.date) }}</span>
