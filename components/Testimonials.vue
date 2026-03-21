@@ -33,6 +33,20 @@ const testimonials = [
         mark: 5,
         review: 'I love the variety of topics and the fact that new articles are added regularly. It keeps me motivated to learn new things every day.',
     },
+    {
+        name: 'Dean Manams',
+        date: '2026-03-17',
+        device: 'Apple iOS',
+        mark: 5,
+        review: 'I am happy about my progress with Fluemingo, I recommend it!',
+    },
+    {
+        name: 'Nik Lallam',
+        date: '2026-03-19',
+        device: 'Apple iOS',
+        mark: 5,
+        review: 'I very enjoy the flashcards to repeat the vocabulary',
+    },
 ]
 
 
@@ -43,9 +57,12 @@ const getDate = (date: string) => {
 
 <template>
   <div id="testimonials" class="testimonials">
-    <h2 class="section-title">Testimonials</h2>
-    <div class="features-grid">
-      <article v-for="(feature, i) in testimonials" :key="i" class="feature-card">
+
+    <h2 class="section-title">
+      <i class="fa-solid fa-comment-quote"></i> Testimonials</h2>
+    <div class="testimonials-scroll-wrapper">
+      <div class="testimonials-track">
+        <article v-for="(feature, i) in [...testimonials, ...testimonials]" :key="`${i}-${feature.name}`" class="feature-card">
         <div class="feature-card-header">
           <img :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="80" height="80" loading="lazy" />
           <div class="feature-card-meta">
@@ -63,15 +80,18 @@ const getDate = (date: string) => {
             </span>
         </div>
         <div class="feature-desc">
-            <div><i class="fa-light fa-quote-left mr-2"></i></div>
-            <div class="feature-review">{{ feature.review }}</div>
-            <div class="feature-quote-right"><i class="fa-light fa-quote-right ml-2"></i></div>
+            <div></div>
+            <div class="feature-review">
+              "{{ feature.review }}"
+            </div>
+            <div class="feature-quote-right"></div>
         </div>
         <div class="feature-name">
             <h3 class="feature-title">{{ feature.name }}</h3>
             <span class="feature-date">{{ getDate(feature.date) }}</span>
         </div>
-      </article>
+        </article>
+      </div>
     </div>
   </div>
 </template>
@@ -90,11 +110,32 @@ const getDate = (date: string) => {
   text-align: center;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.testimonials-scroll-wrapper {
+  overflow: hidden;
+  padding: 2rem 0;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.testimonials-track {
+  display: flex;
   gap: 2rem;
-  padding: 2rem;
+  padding: 0 2rem;
+  animation: scroll-horizontal 40s linear infinite;
+  width: max-content;
+}
+
+.testimonials-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .feature-card {
@@ -107,6 +148,9 @@ const getDate = (date: string) => {
   border-radius: 1rem;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: black;
+  flex-shrink: 0;
+  min-width: 320px;
+  max-width: 380px;
 }
 
 .feature-card-header {

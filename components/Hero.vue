@@ -18,7 +18,11 @@ const props = withDefaults(
    <NavBar />
     <div class="hero-body">
       <div class="hero-text enter">
-        <p>Learn <img class="flag ml-4 mr-2" src="../assets/flags/english.svg" alt="English"><img class="flag mr-2" src="../assets/flags/french.svg" alt="French"><img class="flag mr-4" src="../assets/flags/spanish.svg" alt="Spanish"> with your</p>
+        <p>Learn 
+          <!-- <img class="flag ml-4 mr-2" src="../assets/flags/english.svg" alt="English"> -->
+          <img class="flag ml-1 mr-2" src="../assets/flags/french.svg" alt="French"></img>
+          <!-- <img class="flag mr-4" src="../assets/flags/spanish.svg" alt="Spanish">  -->
+          with your</p>
         <p class="highlight">Favorite Content</p>
         <br>
         <p>Build a </p>
@@ -103,8 +107,8 @@ const props = withDefaults(
 }
 
 .flag {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .mr-2 {
@@ -114,7 +118,9 @@ const props = withDefaults(
 .ml-4 {
   margin-left: 1rem;
 }
-
+.ml-1 {
+  margin-left: 1rem;
+}
 .mr-4 {
   margin-right: 1rem;
 }

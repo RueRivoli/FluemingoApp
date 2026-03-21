@@ -43,6 +43,9 @@ const currentYear = new Date().getFullYear();
           <li>
             <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>
           </li>
+          <li>
+            <a href="/user-data-deletion" target="_blank" rel="noopener">Data Deletion</a>
+          </li>
         </ul>
       </div>
     </nav>
