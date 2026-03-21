@@ -58,7 +58,7 @@ const props = withDefaults(
                 </div>
             </div>
             <div class="banner-content-right">
-                <!-- <img src="/screenshots/flamingo-min.png" width="1000" height="auto" alt="Banner" loading="lazy" /> -->
+                <img src="/screenshots/flamingo-min.png" width="1000" height="auto" alt="Banner" loading="lazy" />
             </div>
         </div>
     </div>
