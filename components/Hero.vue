@@ -50,7 +50,7 @@ const props = withDefaults(
         </div>
       </div>
       <div class="hero-image">
-        <!-- <img src="../assets/img/hero-large-min.png" width="800" height="auto" alt="Hero Image" /> -->
+        <img src="../assets/img/hero-large-min.png" width="800" height="auto" alt="Hero Image" />
       </div>
     </div>
   </div>
