@@ -94,21 +94,28 @@ import Footer from '../components/Footer.vue';
 </template>
 
 <style scoped>
+.landing {
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
+
 .page-container {
-  padding: 2rem;
+  width: min(100%, var(--page-max-width-narrow));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3rem) var(--page-gutter);
 }
 
 .page-content {
-  padding: 1rem;
+  padding: 1rem 0 0;
 }
 
 .content-item {
-  padding: 1rem;
+  padding: 1rem 0;
   margin-bottom: 1rem;
 }
 
 .content-item-subsection {
-  padding: 1rem;
+  padding: 1rem 0 0;
   margin-bottom: 1rem;
 }
 
@@ -124,5 +131,11 @@ import Footer from '../components/Footer.vue';
 
 .content-item a:hover {
   color: var(--color-primary-dark);
+}
+
+@media (max-width: 640px) {
+  .page-container {
+    padding-top: 1.5rem;
+  }
 }
 </style>

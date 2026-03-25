@@ -29,15 +29,15 @@ import { articleList } from '../articles/article-list';
 }
 
 .blog-content {
-  padding: 2rem;
+  width: min(100%, var(--page-max-width-narrow));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3rem) var(--page-gutter);
 }
 
 .blog-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 80%;
-  margin: 0 auto;
 }
 
 .blog-post {
@@ -47,5 +47,11 @@ import { articleList } from '../articles/article-list';
   border: 1px solid var(--color-border);
   padding: 1rem;
   border-radius: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .blog-content {
+    padding-top: 1.5rem;
+  }
 }
 </style>

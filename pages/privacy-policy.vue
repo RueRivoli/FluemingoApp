@@ -143,23 +143,37 @@ import NavBar from '../components/NavBar.vue';
 
 
 <style scoped>
+.landing {
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
 
 .privacy-policy-container {
-  padding: 2rem;
+  width: min(100%, var(--page-max-width-narrow));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3rem) var(--page-gutter);
 }
 .privacy-policy-content {
-  padding: 1rem;
+  padding: 1rem 0 0;
 }
 .privacy-policy-content-item {
-  padding: 1rem;
+  padding: 1rem 0;
   margin-bottom: 1rem;
 }
 .privacy-policy-content-item-subsection {
-  padding: 1rem;
+  padding: 1rem 0 0;
   margin-bottom: 1rem;
-  ul {
-    padding-left: 1rem;
-    list-style-type: disc;
+}
+
+.privacy-policy-content-item ul,
+.privacy-policy-content-item-subsection ul {
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+
+@media (max-width: 640px) {
+  .privacy-policy-container {
+    padding-top: 1.5rem;
   }
 }
 </style>

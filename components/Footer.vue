@@ -56,42 +56,53 @@ const currentYear = new Date().getFullYear();
 </template>
 
 <style scoped>
+.footer {
+  padding: 0 var(--page-gutter) 2rem;
+}
 
 .footer-links {
-  display: flex;
-  justify-content: space-around;
-  gap: 5rem;
-  margin-top: 2rem;
+  width: min(100%, var(--page-max-width));
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(3, minmax(140px, 1fr));
+  gap: 2rem;
+  align-items: start;
 }
 
 .footer-links-item {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  li {
-    margin: 0;
-    padding: 0;
-  }
-  a {
-    text-decoration: none;
-    color: var(--color-text);
-  }
-  .footer-links-item-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--color-text);
-  }
+}
+
+.footer-links-item ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links-item li {
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.footer-links-item a {
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.footer-links-item-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text);
 }
 
 .footer-copy-container {
+  width: min(100%, var(--page-max-width));
   border-top: 1px solid var(--color-border);
-  margin: 2rem 0;
+  margin: 0 auto;
   padding-top: 2rem;
   text-align: center;
 }
@@ -102,4 +113,20 @@ const currentYear = new Date().getFullYear();
   color: var(--color-text-muted);
 }
 
+@media (max-width: 1024px) {
+  .footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding-bottom: 1.5rem;
+  }
+
+  .footer-links {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
 </style>

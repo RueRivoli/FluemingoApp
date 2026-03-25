@@ -12,8 +12,8 @@ const props = withDefaults(defineProps<{ theme?: 'blue' | 'light' }>(), {
 
 const logoSrc = computed(() =>
   props.theme === 'light'
-    ? '/logo/official_small_white.png'
-    : '/logo/official_small.png'
+    ? '/logo/official_small.png'
+    : '/logo/official_small_white.png'
 )
 
 // If the theme changes, retry loading the new src
@@ -44,7 +44,7 @@ watch(logoSrc, () => {
 .badge-logo {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   min-height: 2rem;
 
   &.badge-light{
@@ -61,7 +61,7 @@ watch(logoSrc, () => {
   display: block;
 }
 .badge-logo span {
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
     font-weight: 600;
     color: white;
 }

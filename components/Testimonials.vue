@@ -98,21 +98,21 @@ const getDate = (date: string) => {
 
 <style scoped>
 .testimonials {
-  padding: 4rem 0;
+  padding: var(--section-spacing) 0;
   background-color: var(--color-background);
   opacity: 0.8;
   color: var(--color-text);
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: clamp(1.8rem, 1.5rem + 1vw, 2.4rem);
   font-weight: 600;
   text-align: center;
 }
 
 .testimonials-scroll-wrapper {
   overflow: hidden;
-  padding: 2rem 0;
+  padding: 2rem 0 0;
   mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
@@ -149,8 +149,7 @@ const getDate = (date: string) => {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: black;
   flex-shrink: 0;
-  min-width: 320px;
-  max-width: 380px;
+  width: min(380px, calc(100vw - 4rem));
 }
 
 .feature-card-header {
@@ -214,5 +213,28 @@ const getDate = (date: string) => {
 }
 .ml-2 {
   margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .testimonials-scroll-wrapper {
+    padding-top: 1.5rem;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .testimonials-track {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .feature-card {
+    padding: 1.5rem;
+    width: min(320px, calc(100vw - 2rem));
+  }
+
+  .feature-avatar {
+    width: 64px;
+    height: 64px;
+  }
 }
 </style>

@@ -110,24 +110,38 @@ import Footer from '../components/Footer.vue';
 
 
 <style scoped>
+.landing {
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
 
 .terms-container {
-  padding: 2rem;
+  width: min(100%, var(--page-max-width-narrow));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3rem) var(--page-gutter);
 }
 
 .terms {
-  padding: 1rem;
+  padding: 1rem 0 0;
 }
 .terms-item {
-  padding: 1rem;
+  padding: 1rem 0;
   margin-bottom: 1rem;
 }
 .terms-item-subsection {
-  padding: 1rem;
+  padding: 1rem 0 0;
   margin-bottom: 1rem;
-  ul {
-    padding-left: 1rem;
-    list-style-type: disc;
+}
+
+.terms-item ul,
+.terms-item-subsection ul {
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+
+@media (max-width: 640px) {
+  .terms-container {
+    padding-top: 1.5rem;
   }
 }
 </style>

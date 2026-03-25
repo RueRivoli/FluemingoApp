@@ -15,19 +15,15 @@ const props = withDefaults(
 
 <template>
   <div class="hero hero-content">
-   <NavBar />
+    <NavBar />
     <div class="hero-body">
       <div class="hero-text enter">
-        <p>Learn 
-          <!-- <img class="flag ml-4 mr-2" src="../assets/flags/english.svg" alt="English"> -->
+        <p class="hero-line">Learn
           <img class="flag ml-1 mr-2" src="../assets/flags/french.svg" alt="French"></img>
-          <!-- <img class="flag mr-4" src="../assets/flags/spanish.svg" alt="Spanish">  -->
           with your</p>
         <p class="highlight">Favorite Content</p>
-        <br>
-        <p>Build a </p>
+        <p class="hero-line hero-line-spaced">Build a</p>
         <p class="highlight">Strong and Lasting Vocabulary</p>
-        <br>
         <div class="store-badges">
           <a
             :href="appStoreUrl"
@@ -61,54 +57,26 @@ const props = withDefaults(
   display: flex;
   flex-direction: column;
   background-color: var(--color-primary);
-  padding: 0;
+  padding: 0 0 2rem;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   min-height: 100vh;
-}
-
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1.5rem;
-  color: white;
-  flex-shrink: 0;
-}
-
-.nav-links {
-  display: flex;
-  justify-content: flex-start;
-  width: 40vw;
-  align-items: center;
-  gap: 8rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-links a {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: white;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: var(--color-secondary);
+  min-height: 100svh;
 }
 
 .hero-body {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.95fr);
+  gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
   flex: 1;
-  padding: 0 4rem 4rem;
+  width: min(100%, var(--page-max-width));
+  margin: 0 auto;
+  padding: 1rem var(--page-gutter) 3rem;
 }
 
 .flag {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: clamp(2rem, 4vw, 2.5rem);
+  height: clamp(2rem, 4vw, 2.5rem);
 }
 
 .mr-2 {
@@ -128,8 +96,9 @@ const props = withDefaults(
 .store-badges {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
 }
 
 .store-badge {
@@ -144,13 +113,25 @@ const props = withDefaults(
 }
 
 .store-badge img {
-  height: 56px;
+  height: clamp(44px, 8vw, 56px);
   width: auto;
   display: block;
 }
 
 .hero-text {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.65rem);
+  line-height: 1.15;
+  max-width: 16ch;
+}
+
+.hero-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hero-line-spaced {
+  margin-top: 1rem;
 }
 
 .highlight {
@@ -158,27 +139,42 @@ const props = withDefaults(
   font-weight: bold;
 }
 
-@media (max-width: 640px) {
-  .navbar {
-    padding: 0.6rem 1rem;
-  }
-
-  .nav-links {
-    gap: 1.25rem;
-  }
-
-  .nav-links a {
-    font-size: 0.875rem;
-  }
-
+@media (max-width: 1024px) {
   .hero-body {
-    padding: 0 1.5rem 2rem;
-    flex-direction: column;
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
   }
 
   .hero-text {
-    font-size: 1.5rem;
+    max-width: 18ch;
+  }
+
+  .hero-line,
+  .store-badges {
+    justify-content: center;
+  }
+
+  .hero-image {
+    width: min(100%, 640px);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-body {
+    padding-bottom: 2rem;
+  }
+
+  .ml-1 {
+    margin-left: 0.5rem;
+  }
+
+  .mr-2 {
+    margin-right: 0.375rem;
   }
 }
 </style>

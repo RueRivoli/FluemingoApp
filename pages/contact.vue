@@ -156,12 +156,14 @@ async function handleSubmit(e: Event) {
 }
 
 .contact-container {
-  padding: 2rem;
+  width: min(100%, var(--page-max-width-narrow));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3rem) var(--page-gutter);
 }
 
 .contact-content {
-  padding: 1rem;
-  max-width: 600px;
+  padding: 1rem 0 0;
+  max-width: 680px;
 }
 
 .contact-intro {
@@ -285,5 +287,16 @@ async function handleSubmit(e: Event) {
 
 .contact-email:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .contact-container {
+    padding-top: 1.5rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>

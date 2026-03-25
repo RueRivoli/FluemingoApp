@@ -35,7 +35,10 @@ function scrollToSection(id: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.5rem;
+  gap: 1rem 2rem;
+  width: min(100%, var(--page-max-width));
+  margin: 0 auto;
+  padding: 1rem var(--page-gutter);
   flex-shrink: 0;
 }
 
@@ -49,10 +52,12 @@ function scrollToSection(id: string) {
 }
 .nav-links {
   display: flex;
-  justify-content: flex-start;
-  width: 40vw;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  width: auto;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8rem;
+  gap: 0.75rem 2rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -73,5 +78,32 @@ function scrollToSection(id: string) {
 }
 .nav-links-blue a{
   color: white;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    justify-content: center;
+  }
+
+  .nav-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+  }
+
+  .nav-links {
+    width: 100%;
+    gap: 0.75rem 1.25rem;
+  }
+
+  .nav-links a {
+    font-size: 0.875rem;
+  }
 }
 </style>

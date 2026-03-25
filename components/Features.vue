@@ -74,32 +74,37 @@ const features = [
 
 <style scoped>
 .functionnalities {
-  padding: 4rem 0;
+  padding: var(--section-spacing) var(--page-gutter);
   background-color: var(--color-background);
   opacity: 0.8;
   color: var(--color-text);
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: clamp(1.8rem, 1.5rem + 1vw, 2.4rem);
   font-weight: 600;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
 .features-list {
+  width: min(100%, var(--page-max-width));
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0 0;
 }
 
 .feature-item {
-  padding: 2rem;
+  padding: 0;
 }
 
 .feature-card {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  height: 100%;
   background-color: white;
   border: 1px solid black;
   padding: 2rem;
@@ -126,10 +131,10 @@ const features = [
 
 .feature-img-container {
   width: 100%;
-  max-width: 400px;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 0.5rem;
+  background-color: var(--color-background);
 }
 
 .feature-img {
@@ -137,5 +142,25 @@ const features = [
   height: auto;
   display: block;
   object-fit: contain;
+}
+
+@media (max-width: 1024px) {
+  .features-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .features-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feature-card {
+    padding: 1.5rem;
+  }
+
+  .feature-card-header {
+    align-items: flex-start;
+  }
 }
 </style>
