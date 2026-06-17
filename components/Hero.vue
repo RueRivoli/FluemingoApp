@@ -26,7 +26,7 @@ const props = withDefaults(
             alt="French"
           ></NuxtImg>
           <NuxtImg
-            class="flag ml-1 mr-2"
+            class="flag mr-2"
             src="../public/flags/english.svg"
             alt="French"
           ></NuxtImg>
@@ -48,15 +48,18 @@ const props = withDefaults(
               alt="App Store"
             />
           </a>
-          <!-- <a
+          <a
             :href="googlePlayUrl"
             class="store-badge"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Disponible sur Google Play"
           >
-            <NuxtImg src="../assets/download/google-play/en/logo.svg" alt="Google Play" />
-          </a> -->
+            <NuxtImg
+              src="../assets/download/google-play/en/logo.svg"
+              alt="Google Play"
+            />
+          </a>
         </div>
       </div>
       <div class="hero-image">

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    appStoreUrl?: string
-    googlePlayUrl?: string
+    appStoreUrl?: string;
+    googlePlayUrl?: string;
   }>(),
   {
-    appStoreUrl: 'https://apps.apple.com/app/ton-app-id',
-    googlePlayUrl: 'https://play.google.com/store/apps/details?id=ton.app.id',
-  }
-)
+    appStoreUrl: "https://apps.apple.com/app/ton-app-id",
+    googlePlayUrl: "https://play.google.com/store/apps/details?id=ton.app.id",
+  },
+);
 </script>
 
 <template>
@@ -17,21 +17,10 @@ const props = withDefaults(
       <div class="banner-content-left">
         <h2>Everything you need to stay consistent</h2>
         <ul>
-          <li>
-            10+ News Articles per week
-          </li>
-          <li>
-            5+ New Audiobooks per week
-          </li>
-          <li>
-            Flashcards to learn vocabulary
-          </li>
-          <li>
-            Progress tracking
-          </li>
-          <li>
-            Recommendations
-          </li>
+          <li>10+ News Articles per week</li>
+          <li>2+ New Audiobooks per week</li>
+          <li>Flashcards to learn vocabulary</li>
+          <li>Progress tracking</li>
         </ul>
         <div class="store-badges">
           <div>
@@ -42,10 +31,13 @@ const props = withDefaults(
               rel="noopener noreferrer"
               aria-label="Download on the App Store"
             >
-              <img src="/download/apple-store/en/logo.svg" alt="App Store" />
+              <NuxtImg
+                src="/download/apple-store/en/logo.svg"
+                alt="App Store"
+              />
             </a>
           </div>
-          <div>
+          <!-- <div>
             <a
               :href="googlePlayUrl"
               class="store-badge"
@@ -53,20 +45,26 @@ const props = withDefaults(
               rel="noopener noreferrer"
               aria-label="Available on Google Play"
             >
-              <img src="/download/google-play/en/logo.svg" alt="Google Play" />
+              <NuxtImg src="/download/google-play/en/logo.svg" alt="Google Play" />
             </a>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="banner-content-right">
-        <img src="/screenshots/flamingo-min.png" width="1000" height="auto" alt="Banner" loading="lazy" />
+        <NuxtImg
+          src="/screenshots/flamingo-min.png"
+          width="1000"
+          height="auto"
+          alt="Banner"
+          loading="lazy"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.banner{
+.banner {
   color: var(--color-text);
   background-color: var(--color-bg);
   border-radius: 1.5rem;
@@ -75,12 +73,12 @@ const props = withDefaults(
   overflow: hidden;
   box-shadow: 0 18px 50px rgba(26, 26, 26, 0.08);
 }
-.banner-content{
+.banner-content {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(280px, 1fr);
   gap: 2rem;
 }
-.banner-content-left{
+.banner-content-left {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -99,12 +97,12 @@ const props = withDefaults(
     gap: 0.75rem;
   }
 }
-.banner-content-right{
+.banner-content-right {
   width: 100%;
   height: 100%;
   overflow: hidden;
 
-  img{
+  img {
     width: 100%;
     height: 100%;
     object-fit: cover;
