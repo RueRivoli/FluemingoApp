@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import NavBar from './NavBar.vue';
+import NavBar from "./NavBar.vue";
 
 const props = withDefaults(
   defineProps<{
-    appStoreUrl?: string
-    googlePlayUrl?: string
+    appStoreUrl?: string;
+    googlePlayUrl?: string;
   }>(),
   {
-    appStoreUrl: 'https://apps.apple.com/app/ton-app-id',
-    googlePlayUrl: 'https://play.google.com/store/apps/details?id=ton.app.id',
-  }
-)
+    appStoreUrl: "https://apps.apple.com/app/ton-app-id",
+    googlePlayUrl: "https://play.google.com/store/apps/details?id=ton.app.id",
+  },
+);
 </script>
 
 <template>
@@ -18,9 +18,20 @@ const props = withDefaults(
     <NavBar />
     <div class="hero-body">
       <div class="hero-text enter">
-        <p class="hero-line">Learn
-          <img class="flag ml-1 mr-2" src="../assets/flags/french.svg" alt="French"></img>
-          with your</p>
+        <p class="hero-line">
+          Learn
+          <NuxtImg
+            class="flag ml-1 mr-2"
+            src="../public/flags/french.svg"
+            alt="French"
+          ></NuxtImg>
+          <NuxtImg
+            class="flag ml-1 mr-2"
+            src="../public/flags/english.svg"
+            alt="French"
+          ></NuxtImg>
+          with your
+        </p>
         <p class="highlight">Favorite Content</p>
         <p class="hero-line hero-line-spaced">Build a</p>
         <p class="highlight">Strong and Lasting Vocabulary</p>
@@ -32,21 +43,29 @@ const props = withDefaults(
             rel="noopener noreferrer"
             aria-label="Télécharger sur l'App Store"
           >
-            <img src="../assets/download/apple-store/en/logo.svg" alt="App Store" />
+            <NuxtImg
+              src="../public/download/apple-store/en/logo.svg"
+              alt="App Store"
+            />
           </a>
-          <a
+          <!-- <a
             :href="googlePlayUrl"
             class="store-badge"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Disponible sur Google Play"
           >
-            <img src="../assets/download/google-play/en/logo.svg" alt="Google Play" />
-          </a>
+            <NuxtImg src="../assets/download/google-play/en/logo.svg" alt="Google Play" />
+          </a> -->
         </div>
       </div>
       <div class="hero-image">
-        <img src="../assets/img/hero-large-min.png" width="800" height="auto" alt="Hero Image" />
+        <NuxtImg
+          src="../public/img/hero-large-min.png"
+          width="800"
+          height="auto"
+          alt="Hero Image"
+        />
       </div>
     </div>
   </div>
@@ -104,7 +123,9 @@ const props = withDefaults(
 .store-badge {
   display: inline-block;
   line-height: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .store-badge:hover {
