@@ -1,11 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   runtimeConfig: {
     public: {
       formspreeEndpoint: process.env.NUXT_PUBLIC_FORMSPREE_ENDPOINT || '',
     },
   },
+
   css: [
     '~/assets/css/variables.css',
     '@fortawesome/fontawesome-pro/css/fontawesome.min.css',
@@ -13,6 +15,7 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-pro/css/light.min.css',
     '@fortawesome/fontawesome-pro/css/duotone.min.css',
   ],
+
   app: {
     head: {
       title: 'Fluemingo App — Learn & Progress Faster',
@@ -33,5 +36,7 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   compatibilityDate: '2024-11-01',
+  modules: ['@nuxt/image'],
 })
