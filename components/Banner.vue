@@ -37,7 +37,7 @@ const props = withDefaults(
               />
             </a>
           </div>
-          <!-- <div>
+          <div>
             <a
               :href="googlePlayUrl"
               class="store-badge"
@@ -45,14 +45,17 @@ const props = withDefaults(
               rel="noopener noreferrer"
               aria-label="Available on Google Play"
             >
-              <NuxtImg src="/download/google-play/en/logo.svg" alt="Google Play" />
+              <NuxtImg
+                src="/download/google-play/en/logo.svg"
+                alt="Google Play"
+              />
             </a>
-          </div> -->
+          </div>
         </div>
       </div>
       <div class="banner-content-right">
         <NuxtImg
-          src="/screenshots/flamingo-min.png"
+          src="/screenshots/metro-flamingo.png"
           width="1000"
           height="auto"
           alt="Banner"

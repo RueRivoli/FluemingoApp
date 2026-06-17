@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import NavBar from "./NavBar.vue";
-
 const props = withDefaults(
   defineProps<{
     appStoreUrl?: string;
@@ -22,13 +20,15 @@ const props = withDefaults(
           Learn
           <NuxtImg
             class="flag ml-1 mr-2"
-            src="../public/flags/french.svg"
+            src="/flags/french.svg"
             alt="French"
+            loading="lazy"
           ></NuxtImg>
           <NuxtImg
             class="flag mr-2"
-            src="../public/flags/english.svg"
+            src="/flags/english.svg"
             alt="French"
+            loading="lazy"
           ></NuxtImg>
           with your
         </p>
@@ -43,10 +43,7 @@ const props = withDefaults(
             rel="noopener noreferrer"
             aria-label="Télécharger sur l'App Store"
           >
-            <NuxtImg
-              src="../public/download/apple-store/en/logo.svg"
-              alt="App Store"
-            />
+            <NuxtImg src="/download/apple-store/en/logo.svg" alt="App Store" />
           </a>
           <a
             :href="googlePlayUrl"
@@ -56,7 +53,7 @@ const props = withDefaults(
             aria-label="Disponible sur Google Play"
           >
             <NuxtImg
-              src="../assets/download/google-play/en/logo.svg"
+              src="/download/google-play/en/logo.svg"
               alt="Google Play"
             />
           </a>
@@ -64,7 +61,7 @@ const props = withDefaults(
       </div>
       <div class="hero-image">
         <NuxtImg
-          src="../public/img/hero-large-min.png"
+          src="/img/hero-large-min.png"
           width="800"
           height="auto"
           alt="Hero Image"
