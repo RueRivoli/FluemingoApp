@@ -1,6 +1,6 @@
-# Site de présentation — Mon App
+# Market Site for Fluemingo Mobile App
 
-Landing page Nuxt pour la présentation de l’application mobile (App Store).
+Landing page with Nuxt for a Mobile App
 
 ## Démarrage
 
