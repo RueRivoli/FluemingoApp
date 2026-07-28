@@ -1,95 +1,115 @@
 <script setup lang="ts">
-const DICEBEAR_API = 'https://api.dicebear.com/9.x/open-peeps/svg'
+const DICEBEAR_API = "https://api.dicebear.com/9.x/open-peeps/svg";
 
 function avatarUrl(seed: string) {
   const params = new URLSearchParams({
     seed,
-    radius: '50',           // full circle shape
-    size: '80',             // match display size for sharp rendering
-    backgroundColor: 'e8e1e1', // soft neutral background
-  })
-  return `${DICEBEAR_API}?${params.toString()}`
+    radius: "50", // full circle shape
+    size: "80", // match display size for sharp rendering
+    backgroundColor: "e8e1e1", // soft neutral background
+  });
+  return `${DICEBEAR_API}?${params.toString()}`;
 }
 
 const testimonials = [
-    {
-        date: '2026-03-01',
-        name: 'Jamie Cambray',
-        device: 'Apple iOS',
-        mark: 5,
-        review: 'This App really helps me to practise French everyday. I was able to save vocabulary into the Flashcards, they are a great way to learn new words and phrases.',
-    },
-    {
-        name: 'Roberto Murcia',
-        date: '2026-03-04',
-        device: 'Apple iOS',
-        mark: 5,
-        review: 'Fluemingo has been a game-changer for my language learning journey. The audiobooks are great for listening practice, and the flashcards help me memorize new words efficiently.',
-    },
-    {
-        name: 'Sebastian Moreno',
-        date: '2026-03-07',
-        device: 'Apple iOS',
-        mark: 5,
-        review: 'I love the variety of topics and the fact that new articles are added regularly. It keeps me motivated to learn new things every day.',
-    },
-    {
-        name: 'Dean Manams',
-        date: '2026-03-17',
-        device: 'Apple iOS',
-        mark: 5,
-        review: 'I am happy about my progress with Fluemingo, I recommend it!',
-    },
-    {
-        name: 'Nik Lallam',
-        date: '2026-03-19',
-        device: 'Apple iOS',
-        mark: 5,
-        review: 'I very enjoy the flashcards to repeat the vocabulary',
-    },
-]
-
+  {
+    date: "2026-03-01",
+    name: "Jamie Cambray",
+    device: "Apple iOS",
+    mark: 5,
+    review:
+      "This App really helps me to practise French everyday. I was able to save vocabulary into the Flashcards, they are a great way to learn new words and phrases.",
+  },
+  {
+    name: "Roberto Murcia",
+    date: "2026-03-04",
+    device: "Apple iOS",
+    mark: 5,
+    review:
+      "Fluemingo has been a game-changer for my language learning journey. The audiobooks are great for listening practice, and the flashcards help me memorize new words efficiently.",
+  },
+  {
+    name: "Sebastian Moreno",
+    date: "2026-03-07",
+    device: "Apple iOS",
+    mark: 5,
+    review:
+      "I love the variety of topics and the fact that new articles are added regularly. It keeps me motivated to learn new things every day.",
+  },
+  {
+    name: "Dean Manams",
+    date: "2026-03-17",
+    device: "Apple iOS",
+    mark: 5,
+    review: "I am happy about my progress with Fluemingo, I recommend it!",
+  },
+  {
+    name: "Nik Lallam",
+    date: "2026-03-19",
+    device: "Apple iOS",
+    mark: 5,
+    review: "I very enjoy the flashcards to repeat the vocabulary",
+  },
+];
 
 const getDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-}
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
 </script>
 
 <template>
   <div id="testimonials" class="testimonials">
-
     <h2 class="section-title">
-      <i class="fa-solid fa-comment-quote"></i> Testimonials</h2>
+      <i class="fa-solid fa-comment-quote"></i> Testimonials
+    </h2>
     <div class="testimonials-scroll-wrapper">
       <div class="testimonials-track">
-        <article v-for="(feature, i) in [...testimonials, ...testimonials]" :key="`${i}-${feature.name}`" class="feature-card">
-        <div class="feature-card-header">
-          <NuxtImg :src="avatarUrl(feature.name)" :alt="feature.name" class="feature-avatar" width="80" height="80" loading="lazy" />
-          <div class="feature-card-meta">
+        <article
+          v-for="(feature, i) in [...testimonials, ...testimonials]"
+          :key="`${i}-${feature.name}`"
+          class="feature-card"
+        >
+          <div class="feature-card-header">
+            <NuxtImg
+              :src="avatarUrl(feature.name)"
+              :alt="feature.name"
+              class="feature-avatar"
+              width="80"
+              height="80"
+              loading="lazy"
+            />
+            <div class="feature-card-meta">
+              <h3 class="feature-title">{{ feature.name }}</h3>
+              <span class="feature-date">{{ getDate(feature.date) }}</span>
+            </div>
+          </div>
+          <div class="feature-stars">
+            <i
+              v-for="n in feature.mark"
+              :key="n"
+              class="fa-solid fa-star feature-star"
+            ></i>
+          </div>
+          <div class="feature-device">
+            Device:
+            <span class="feature-device-text">
+              <i class="fa-light fa-mobile mr-1"></i>
+              {{ feature.device }}
+            </span>
+          </div>
+          <div class="feature-desc">
+            <div></div>
+            <div class="feature-review">"{{ feature.review }}"</div>
+            <div class="feature-quote-right"></div>
+          </div>
+          <div class="feature-name">
             <h3 class="feature-title">{{ feature.name }}</h3>
             <span class="feature-date">{{ getDate(feature.date) }}</span>
           </div>
-        </div>
-        <div class="feature-stars">
-          <i v-for="n in feature.mark" :key="n" class="fa-solid fa-star feature-star"></i>
-        </div>
-        <div class="feature-device">Device: 
-            <span class="feature-device-text">
-                <i class="fa-light fa-mobile mr-1"></i>
-                {{ feature.device }}
-            </span>
-        </div>
-        <div class="feature-desc">
-            <div></div>
-            <div class="feature-review">
-              "{{ feature.review }}"
-            </div>
-            <div class="feature-quote-right"></div>
-        </div>
-        <div class="feature-name">
-            <h3 class="feature-title">{{ feature.name }}</h3>
-            <span class="feature-date">{{ getDate(feature.date) }}</span>
-        </div>
         </article>
       </div>
     </div>
@@ -113,8 +133,20 @@ const getDate = (date: string) => {
 .testimonials-scroll-wrapper {
   overflow: hidden;
   padding: 2rem 0 0;
-  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
 }
 
 .testimonials-track {
@@ -182,7 +214,7 @@ const getDate = (date: string) => {
 }
 
 .feature-star {
-  color: var(--color-secondary, #F6D75A);
+  color: var(--color-secondary, #f6d75a);
   font-size: 1rem;
 }
 

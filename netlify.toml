@@ -1,0 +1,4 @@
+[images]
+  # Domaines distants autorisés par le CDN d'images Netlify (/.netlify/images).
+  # Les motifs sont des regex qui doivent matcher l'URL complète, query string incluse.
+  remote_images = ['https://api\.dicebear\.com/.*']
