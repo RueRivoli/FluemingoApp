@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { useRuntimeConfig } from 'nuxt/app';
 import NavBar from '../components/NavBar.vue';
 import Footer from '../components/Footer.vue';
 
-const config = useRuntimeConfig();
-const formspreeEndpoint = config.public.formspreeEndpoint as string;
+// Netlify Forms: the form below is detected at deploy time thanks to the
+// `name` + `data-netlify` attributes on the prerendered HTML. Submissions are
+// sent as urlencoded POSTs to the site root, which Netlify intercepts.
+const FORM_NAME = 'contact';
 
 const form = reactive({
   name: '',
@@ -14,30 +15,30 @@ const form = reactive({
   message: '',
 });
 
+// Honeypot — real users never fill this in, bots do.
+const botField = ref('');
+
 const status = ref<'idle' | 'sending' | 'success' | 'error'>('idle');
 const errorMessage = ref('');
 
 async function handleSubmit(e: Event) {
   e.preventDefault();
-  if (!formspreeEndpoint) {
-    status.value = 'error';
-    errorMessage.value = 'Contact form is not configured. Please email us at contact@fluemingo-app.com';
-    return;
-  }
 
   status.value = 'sending';
   errorMessage.value = '';
 
   try {
-    const res = await fetch(formspreeEndpoint, {
+    const res = await fetch('/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        'form-name': FORM_NAME,
+        'bot-field': botField.value,
         name: form.name,
         email: form.email,
         subject: form.subject,
         message: form.message,
-      }),
+      }).toString(),
     });
 
     if (res.ok) {
@@ -47,8 +48,7 @@ async function handleSubmit(e: Event) {
       form.subject = '';
       form.message = '';
     } else {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || `Request failed (${res.status})`);
+      throw new Error(`Request failed (${res.status})`);
     }
   } catch (err) {
     status.value = 'error';
@@ -67,7 +67,23 @@ async function handleSubmit(e: Event) {
           We'd love to hear from you. Whether you have a question about Fluemingo, need support, or want to share feedback, we're here to help.
         </p>
 
-        <form v-if="status !== 'success'" class="contact-form" @submit="handleSubmit">
+        <form
+          v-if="status !== 'success'"
+          class="contact-form"
+          name="contact"
+          method="post"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+          @submit="handleSubmit"
+        >
+          <!-- Required by Netlify so the submission is attributed to the right form. -->
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="honeypot-field">
+            <label>
+              Don't fill this out if you're human
+              <input v-model="botField" type="text" name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
           <div class="form-group">
             <label for="name">Name</label>
             <input
@@ -129,7 +145,7 @@ async function handleSubmit(e: Event) {
           </button>
         </div>
 
-        <p v-if="!formspreeEndpoint" class="contact-fallback">
+        <p v-if="status === 'error'" class="contact-fallback">
           Or email us directly at <a href="mailto:contact@fluemingo-app.com" class="contact-email">contact@fluemingo-app.com</a>
         </p>
         <p v-else class="contact-response-note">
@@ -176,6 +192,17 @@ async function handleSubmit(e: Event) {
   flex-direction: column;
   gap: 1.25rem;
   margin-bottom: 2rem;
+}
+
+/* Netlify honeypot — hidden from users and assistive tech, still in the DOM for bots. */
+.honeypot-field {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .form-group {
