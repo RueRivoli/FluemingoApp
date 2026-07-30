@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
+import { reactive, ref } from "vue";
+import NavBar from "../components/NavBar.vue";
+import Footer from "../components/Footer.vue";
 
 // Netlify Forms: the form below is detected at deploy time thanks to the
 // `name` + `data-netlify` attributes on the prerendered HTML. Submissions are
 // sent as urlencoded POSTs to the site root, which Netlify intercepts.
-const FORM_NAME = 'contact';
+const FORM_NAME = "contact";
 
 const form = reactive({
-  name: '',
-  email: '',
-  subject: '',
-  message: '',
+  name: "",
+  email: "",
+  subject: "",
+  message: "",
 });
 
 // Honeypot — real users never fill this in, bots do.
-const botField = ref('');
+const botField = ref("");
 
-const status = ref<'idle' | 'sending' | 'success' | 'error'>('idle');
-const errorMessage = ref('');
+const status = ref<"idle" | "sending" | "success" | "error">("idle");
+const errorMessage = ref("");
 
 async function handleSubmit(e: Event) {
   e.preventDefault();
 
-  status.value = 'sending';
-  errorMessage.value = '';
+  status.value = "sending";
+  errorMessage.value = "";
 
   try {
-    const res = await fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    const res = await fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        'form-name': FORM_NAME,
-        'bot-field': botField.value,
+        "form-name": FORM_NAME,
+        "bot-field": botField.value,
         name: form.name,
         email: form.email,
         subject: form.subject,
@@ -42,17 +42,20 @@ async function handleSubmit(e: Event) {
     });
 
     if (res.ok) {
-      status.value = 'success';
-      form.name = '';
-      form.email = '';
-      form.subject = '';
-      form.message = '';
+      status.value = "success";
+      form.name = "";
+      form.email = "";
+      form.subject = "";
+      form.message = "";
     } else {
       throw new Error(`Request failed (${res.status})`);
     }
   } catch (err) {
-    status.value = 'error';
-    errorMessage.value = err instanceof Error ? err.message : 'Something went wrong. Please try again or email us at contact@fluemingo-app.com';
+    status.value = "error";
+    errorMessage.value =
+      err instanceof Error
+        ? err.message
+        : "Something went wrong. Please try again or email us at contact@fluemingo-app.com";
   }
 }
 </script>
@@ -64,7 +67,9 @@ async function handleSubmit(e: Event) {
       <h1>Contact Us</h1>
       <div class="contact-content">
         <p class="contact-intro">
-          We'd love to hear from you. Whether you have a question about Fluemingo, need support, or want to share feedback, we're here to help.
+          We'd love to hear from you. Whether you have a question about
+          Fluemingo, need support, or want to share feedback, we're here to
+          help.
         </p>
 
         <form
@@ -81,7 +86,13 @@ async function handleSubmit(e: Event) {
           <p class="honeypot-field">
             <label>
               Don't fill this out if you're human
-              <input v-model="botField" type="text" name="bot-field" tabindex="-1" autocomplete="off" />
+              <input
+                v-model="botField"
+                type="text"
+                name="bot-field"
+                tabindex="-1"
+                autocomplete="off"
+              />
             </label>
           </p>
           <div class="form-group">
@@ -133,20 +144,30 @@ async function handleSubmit(e: Event) {
             />
           </div>
           <p v-if="status === 'error'" class="form-error">{{ errorMessage }}</p>
-          <button type="submit" class="submit-btn" :disabled="status === 'sending'">
-            {{ status === 'sending' ? 'Sending...' : 'Send message' }}
+          <button
+            type="submit"
+            class="submit-btn"
+            :disabled="status === 'sending'"
+          >
+            {{ status === "sending" ? "Sending..." : "Send message" }}
           </button>
         </form>
 
         <div v-else class="contact-success">
-          <p class="success-message">Thank you! Your message has been sent. We'll get back to you within 24–48 hours.</p>
+          <p class="success-message">
+            Thank you! Your message has been sent. We'll get back to you within
+            24–48 hours.
+          </p>
           <button type="button" class="submit-btn" @click="status = 'idle'">
             Send another message
           </button>
         </div>
 
         <p v-if="status === 'error'" class="contact-fallback">
-          Or email us directly at <a href="mailto:contact@fluemingo-app.com" class="contact-email">contact@fluemingo-app.com</a>
+          Or email us directly at
+          <a href="mailto:contact@fluemingo-app.com" class="contact-email"
+            >contact@fluemingo-app.com</a
+          >
         </p>
         <p v-else class="contact-response-note">
           We typically respond within 24–48 hours.
@@ -155,7 +176,9 @@ async function handleSubmit(e: Event) {
         <div class="contact-method">
           <h3>Publisher</h3>
           <p>
-            Fluemingo is published and operated by <strong>FlueHero</strong>, a trading name of Florent GALLOIS, registered as a sole trader (auto-entrepreneur) in France under SIRET n°82308601200023.
+            Fluemingo is published and operated by <strong>FlueHero</strong>, a
+            trading name of Florent GALLOIS, registered as a sole trader
+            (auto-entrepreneur) in France under SIRET n°82308601200023.
           </p>
         </div>
       </div>
@@ -253,7 +276,7 @@ async function handleSubmit(e: Event) {
 
 .submit-btn {
   padding: 0.75rem 1.5rem;
-  background: var(--gradient-primary);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -261,7 +284,9 @@ async function handleSubmit(e: Event) {
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
   align-self: flex-start;
 }
 
