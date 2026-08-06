@@ -8,7 +8,7 @@ const props = withDefaults(
   }>(),
   {
     appStoreUrl: 'https://apps.apple.com/app/id6757644637',
-    googlePlayUrl: 'https://play.google.com/store/apps/details?id=ton.app.id',
+    googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.fluemingo.app',
   }
 )
 
