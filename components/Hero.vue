@@ -5,7 +5,7 @@ const props = withDefaults(
     googlePlayUrl?: string;
   }>(),
   {
-    appStoreUrl: "https://apps.apple.com/app/ton-app-id",
+    appStoreUrl: "https://apps.apple.com/app/id6757644637",
     googlePlayUrl: "https://play.google.com/store/apps/details?id=ton.app.id",
   },
 );
@@ -61,7 +61,7 @@ const props = withDefaults(
       </div>
       <div class="hero-image">
         <NuxtImg
-          src="/img/hero-large-min.png"
+          src="/img/hero-large-transparent.png"
           width="800"
           height="auto"
           alt="Hero Image"

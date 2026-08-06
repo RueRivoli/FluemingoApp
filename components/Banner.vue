@@ -5,7 +5,7 @@ const props = withDefaults(
     googlePlayUrl?: string;
   }>(),
   {
-    appStoreUrl: "https://apps.apple.com/app/ton-app-id",
+    appStoreUrl: "https://apps.apple.com/app/id6757644637",
     googlePlayUrl: "https://play.google.com/store/apps/details?id=ton.app.id",
   },
 );
