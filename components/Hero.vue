@@ -35,7 +35,7 @@ const props = withDefaults(
         </p>
         <p class="highlight">Favorite Content</p>
         <p class="hero-line hero-line-spaced">Build a</p>
-        <p class="highlight">Strong and Lasting Vocabular</p>
+        <p class="highlight">Strong and Lasting Vocabulary</p>
         <div class="store-badges">
           <a
             :href="appStoreUrl"
