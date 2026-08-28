@@ -13,42 +13,37 @@ function avatarUrl(seed: string) {
 
 const testimonials = [
   {
-    date: "2026-03-01",
-    name: "Jamie Cambray",
+    date: "2026-08-14",
+    name: "Manuelita1212",
     device: "Apple iOS",
     mark: 5,
     review:
-      "This App really helps me to practise French everyday. I was able to save vocabulary into the Flashcards, they are a great way to learn new words and phrases.",
+      "Application originale, très agréable à utiliser et pratique ! Je recommande +++",
+    title: "Aplication bien pensée",
   },
   {
-    name: "Roberto Murcia",
-    date: "2026-03-04",
+    name: "Djocmoa",
+    date: "2026-08-10",
     device: "Apple iOS",
     mark: 5,
-    review:
-      "Fluemingo has been a game-changer for my language learning journey. The audiobooks are great for listening practice, and the flashcards help me memorize new words efficiently.",
+    review: "Super application ludique pour apprendre l’anglais !",
+    title: "Super",
   },
   {
-    name: "Sebastian Moreno",
-    date: "2026-03-07",
+    name: "florent711",
+    date: "2026-08-06",
     device: "Apple iOS",
     mark: 5,
-    review:
-      "I love the variety of topics and the fact that new articles are added regularly. It keeps me motivated to learn new things every day.",
+    review: "The design is very nice !",
+    title: "Like it",
   },
   {
-    name: "Dean Manams",
-    date: "2026-03-17",
+    name: "Erkan",
+    date: "2026-08-18",
     device: "Apple iOS",
     mark: 5,
-    review: "I am happy about my progress with Fluemingo, I recommend it!",
-  },
-  {
-    name: "Nik Lallam",
-    date: "2026-03-19",
-    device: "Apple iOS",
-    mark: 5,
-    review: "I very enjoy the flashcards to repeat the vocabulary",
+    review: "French content is very nice. Flashcards are smooth",
+    title: "Great!",
   },
 ];
 

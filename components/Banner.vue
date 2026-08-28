@@ -18,8 +18,8 @@ const props = withDefaults(
       <div class="banner-content-left">
         <h2>Everything you need to stay consistent</h2>
         <ul>
-          <li>10+ News Articles per week</li>
-          <li>2+ New Audiobooks per week</li>
+          <li>7+ News Articles per week</li>
+          <li>5+ New Audiobooks per month</li>
           <li>Flashcards to learn vocabulary</li>
           <li>Progress tracking</li>
         </ul>

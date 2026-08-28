@@ -1,73 +1,138 @@
 <script setup lang="ts">
-import BadgeLogo from './BadgeLogo.vue'
+import BadgeLogo from "./BadgeLogo.vue";
 
 const props = withDefaults(
   defineProps<{
-    appStoreUrl?: string
-    googlePlayUrl?: string
+    appStoreUrl?: string;
+    googlePlayUrl?: string;
   }>(),
   {
-    appStoreUrl: 'https://apps.apple.com/app/id6757644637',
-    googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.fluemingo.app',
-  }
-)
+    appStoreUrl: "https://apps.apple.com/app/id6757644637",
+    googlePlayUrl:
+      "https://play.google.com/store/apps/details?id=com.fluemingo.app",
+  },
+);
 
 function scrollToSection(id: string) {
-  const el = document.getElementById(id)
-  el?.scrollIntoView({ behavior: 'smooth' })
+  const el = document.getElementById(id);
+  el?.scrollIntoView({ behavior: "smooth" });
 }
 
 // Images in public/screenshots/ are served at /screenshots/ (reliable in dev and build)
 const features = [
   {
-    icon: 'book-open',
-    img: '/screenshots/feature-article.png',
-    title: 'Read News Articles every day',
-    description: 'News articles are published every day. Themes are very diverse, you\'ll for sure find something interesting to read !',
-    description2: 'For example: politics, economy, culture, science, gastronomy,technology, sports, and so on.',
-    description3: 'After finishing reading your article, a quiz is available to test your knowledge.',
+    icon: "book-open",
+    img: "/screenshots/feature-articles.png",
+    title: "Daily News Articles",
+    descriptions: [
+      "Read the news. Learn the language.",
+      "A daily article at your level takes 5–10 minutes and fits into any routine.",
+      "Build the vocabulary you'll actually use, across the topics that matter.",
+    ],
   },
   {
-    icon: 'headphones',
-    img: '/screenshots/feature-audiobooks.png',
-    title: 'Listen to Audiobooks you like',
-    description: 'You\'ll find audiobooks of different kinds: biographies, stories, sci-fi, literature, thriller and so on.',
-    description2: 'Diverse themes: culture, history, science, politics, economy, gastronomy, technology, sports, and so on.',
-    description3: 'Audiobooks are divided into chapters so you can easily find the part you want to listen to.',
-    description4: 'A quiz is available at the end of each audiobook to test your knowledge.',
+    icon: "headphones",
+    img: "/screenshots/feature-audiobooks.png",
+    title: "Audiobooks for every taste",
+    descriptions: [
+      "Biographies, short stories, sci-fi, literary summaries, crime stories, thrillers, and more.",
+      "Diverse topics: culture, history, science, politics, economics, food, technology, sports, and more.",
+    ],
   },
   {
-    icon: 'cards-blank',
-    img: '/screenshots/feature-flashcards.png',
-    title: 'Train your Memory with Flashcards',
-    description: 'You can save from articles and audiobooks any word or expression you like',
-    description2: 'These expressions are available in the flashcards section to train',
-    description3: 'You can store them in different categories: difficult, training, achieved.',
+    icon: "cards-blank",
+    img: "/screenshots/feature-flashcards.png",
+    title: "Train your Memory with Flashcards",
+    descriptions: [
+      "Save any expression from a text to a flashcard, instantly.",
+      "Test your comprehension with a quiz on any text.",
+    ],
   },
-]
+];
+
+const currentIndex = ref(0);
+const currentFeature = computed(() => features[currentIndex.value]);
+
+function goTo(index: number) {
+  currentIndex.value = (index + features.length) % features.length;
+}
+
+function prev() {
+  goTo(currentIndex.value - 1);
+}
+
+function next() {
+  goTo(currentIndex.value + 1);
+}
 </script>
 
 <template>
   <div id="features" class="functionnalities">
-    <h2 class="section-title">Features</h2>
-    <div class="features-list">
-      <article class="feature-item" v-for="(feature, i) in features" :key="i">
-        <div class="feature-card">
-          <div class="feature-img-container">
-            <NuxtImg :src="feature.img" :alt="feature.title" class="feature-img" width="400" height="300" loading="lazy" />
-          </div>
+    <h2 class="section-title">
+      Immersion at your own pace. With content you love.
+    </h2>
+
+    <div class="features-carousel">
+      <button
+        type="button"
+        class="carousel-arrow carousel-arrow-prev"
+        aria-label="Previous feature"
+        @click="prev"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <div class="feature-card" :key="currentIndex">
+        <div class="feature-img-container">
+          <NuxtImg
+            :src="currentFeature.img"
+            :alt="currentFeature.title"
+            class="feature-img"
+            width="1000"
+            height="1170"
+            loading="lazy"
+          />
+        </div>
+
+        <div class="feature-content">
           <div class="feature-card-header">
             <span class="feature-icon">
-              <i :class="`fa-duotone fa-solid fa-${feature.icon}`"></i>
+              <i :class="`fa-duotone fa-solid fa-${currentFeature.icon}`"></i>
             </span>
-            <h3 class="feature-card-title">{{ feature.title }}</h3>
+            <h3 class="feature-card-title">{{ currentFeature.title }}</h3>
           </div>
-          <p class="feature-card-description">
-            <i class="fa-duotone fa-solid fa-arrow-right-long"></i> {{ feature.description }}</p>
-          <p class="feature-card-description"> <i class="fa-duotone fa-solid fa-arrow-right-long"></i> {{ feature.description2 }}</p>
-          <p class="feature-card-description"> <i class="fa-duotone fa-solid fa-arrow-right-long"></i> {{ feature.description3 }}</p>
+
+          <p
+            class="feature-card-description"
+            v-for="(description, i) in currentFeature.descriptions"
+            :key="i"
+          >
+            <i class="fa-duotone fa-solid fa-arrow-right-long"></i>
+            {{ description }}
+          </p>
         </div>
-      </article>
+      </div>
+
+      <button
+        type="button"
+        class="carousel-arrow carousel-arrow-next"
+        aria-label="Next feature"
+        @click="next"
+      >
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="carousel-dots">
+      <button
+        type="button"
+        v-for="(feature, i) in features"
+        :key="i"
+        class="carousel-dot"
+        :class="{ 'is-active': i === currentIndex }"
+        :aria-label="`Show feature: ${feature.title}`"
+        @click="goTo(i)"
+      ></button>
     </div>
   </div>
 </template>
@@ -87,37 +152,62 @@ const features = [
   margin-bottom: 1rem;
 }
 
-.features-list {
+.features-carousel {
   width: min(100%, var(--page-max-width));
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
   padding: 1rem 0 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1.5rem);
 }
 
-.feature-item {
+.carousel-arrow {
+  background: none;
+  border: none;
   padding: 0;
+  cursor: pointer;
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+  line-height: 1;
+  color: var(--color-primary);
+  transition: transform 0.15s ease;
+}
+
+.carousel-arrow:hover {
+  transform: scale(1.1);
+}
+
+.carousel-arrow:active {
+  transform: scale(0.95);
 }
 
 .feature-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100%;
-  background-color: white;
-  border: 1px solid black;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: center;
   color: black;
 }
 
-.feature-card-header{
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: white;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  border-radius: 1rem;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.feature-card-header {
   display: flex;
   flex-direction: row;
   gap: 1rem;
   align-items: center;
+}
+
+.feature-card-title {
+  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.6rem);
 }
 
 .feature-icon {
@@ -134,33 +224,76 @@ const features = [
   margin: 0 auto;
   overflow: hidden;
   border-radius: 0.5rem;
-  background-color: var(--color-background);
 }
 
 .feature-img {
   width: 100%;
   height: auto;
   display: block;
-  object-fit: contain;
 }
 
-@media (max-width: 1024px) {
-  .features-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
 }
 
-@media (max-width: 700px) {
-  .features-list {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.carousel-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--color-primary);
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
 
+.carousel-dot.is-active {
+  background-color: var(--color-primary);
+  transform: scale(1.2);
+}
+
+@media (max-width: 800px) {
   .feature-card {
-    padding: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
   }
 
   .feature-card-header {
     align-items: flex-start;
+  }
+
+  .feature-img-container {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .features-carousel {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+
+  .feature-card {
+    grid-row: 1;
+    grid-column: 1;
+    width: 100%;
+  }
+
+  .carousel-arrow-prev {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .carousel-arrow-next {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: end;
   }
 }
 </style>
