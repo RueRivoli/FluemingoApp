@@ -1,3 +1,15 @@
+[build]
+  command = "npm ci && npm run generate"
+  publish = ".output/public"
+
+[build.environment]
+  # npm 10 ne sait pas installer ce projet : son résolveur plante sur la peer dep
+  # optionnelle `@vitejs/devtools: "*"` tirée par Nuxt 4 (erreur `edgesOut`), et il
+  # refuse le lockfile écrit par npm 11 (EBADPLATFORM sur les binaires optionnels).
+  # Le lockfile committé est généré par npm 11 : le build doit utiliser la même version.
+  NODE_VERSION = "22"
+  NPM_VERSION = "11"
+
 [images]
   # Domaines distants autorisés par le CDN d'images Netlify (/.netlify/images).
   # Les motifs sont des regex qui doivent matcher l'URL complète, query string incluse.

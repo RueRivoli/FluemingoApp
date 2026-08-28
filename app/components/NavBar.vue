@@ -1,33 +1,37 @@
 <script setup lang="ts">
-import BadgeLogo from './BadgeLogo.vue';
+import BadgeLogo from "./BadgeLogo.vue";
 
 const props = withDefaults(
   defineProps<{
-    theme?: 'light' | 'blue'
+    theme?: "light" | "blue";
   }>(),
   {
-    theme: 'blue'
-  }
-)
+    theme: "blue",
+  },
+);
 
 function scrollToSection(id: string) {
-  const el = document.getElementById(id)
-  el?.scrollIntoView({ behavior: 'smooth' })
+  const el = document.getElementById(id);
+  el?.scrollIntoView({ behavior: "smooth" });
 }
 </script>
 
 <template>
-    <nav class="navbar" :class="`navbar-${theme}`">
-      <BadgeLogo :theme="theme" />
-      <ul class="nav-links" :class="`nav-links-${theme}`">
-        <li>
-          <a href="#features" @click.prevent="scrollToSection('features')">Features</a>
-        </li>
-        <li>
-          <a href="#apercu" @click.prevent="scrollToSection('apercu')">Aperçu</a>
-        </li>
-      </ul>
-    </nav>
+  <nav class="navbar" :class="`navbar-${theme}`">
+    <BadgeLogo :theme="theme" />
+    <ul class="nav-links" :class="`nav-links-${theme}`">
+      <li>
+        <a href="#features" @click.prevent="scrollToSection('features')"
+          >Features</a
+        >
+      </li>
+      <li>
+        <a href="#overview" @click.prevent="scrollToSection('overview')"
+          >Overview</a
+        >
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <style scoped>
@@ -73,10 +77,10 @@ function scrollToSection(id: string) {
 .nav-links a:hover {
   color: var(--color-secondary);
 }
-.nav-links-light a{
+.nav-links-light a {
   color: var(--color-text);
 }
-.nav-links-blue a{
+.nav-links-blue a {
   color: white;
 }
 

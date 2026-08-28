@@ -13,7 +13,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div id="apercu" class="banner">
+  <div id="overview" class="banner">
     <div class="banner-content">
       <div class="banner-content-left">
         <h2>Everything you need to stay consistent</h2>
