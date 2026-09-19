@@ -49,7 +49,7 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-07-15",
-  modules: ["@nuxt/image"],
+  modules: ["@nuxt/image", "@nuxt/content"],
 
   image: {
     domains: ["api.dicebear.com"],

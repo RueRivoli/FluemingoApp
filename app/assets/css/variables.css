@@ -42,6 +42,9 @@
   --color-border: rgba(102, 126, 234, 0.1);
   --color-border-muted: #eee;
 
+  /* Langues (filtres blog) */
+  --color-lang-en: #001aa0;
+
   /* Utilitaires (optionnel) */
   --color-success: #10b981;
   --color-warning: #f59e0b;

@@ -10,7 +10,23 @@ const props = withDefaults(
   },
 );
 
-function scrollToSection(id: string) {
+const route = useRoute();
+
+// Sur la home : remonte en haut. Ailleurs : retour à la home.
+async function goHome() {
+  if (route.path !== "/") {
+    await navigateTo("/");
+    return;
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Sur la home : scroll fluide. Ailleurs (blog, etc.) : retour à la home sur la section.
+async function scrollToSection(id: string) {
+  if (route.path !== "/") {
+    await navigateTo(`/#${id}`);
+    return;
+  }
   const el = document.getElementById(id);
   el?.scrollIntoView({ behavior: "smooth" });
 }
@@ -21,13 +37,14 @@ function scrollToSection(id: string) {
     <BadgeLogo :theme="theme" />
     <ul class="nav-links" :class="`nav-links-${theme}`">
       <li>
-        <a href="#features" @click.prevent="scrollToSection('features')"
-          >Features</a
-        >
+        <a href="/" @click.prevent="goHome">Home</a>
       </li>
       <li>
-        <a href="#overview" @click.prevent="scrollToSection('overview')"
-          >Overview</a
+        <NuxtLink to="/blog">Blog</NuxtLink>
+      </li>
+      <li>
+        <a href="/#features" @click.prevent="scrollToSection('features')"
+          >Features</a
         >
       </li>
     </ul>
@@ -67,20 +84,24 @@ function scrollToSection(id: string) {
   padding: 0;
 }
 
-.nav-links a {
+.nav-links a,
+.nav-links :deep(a) {
   font-size: 0.9375rem;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links :deep(a:hover) {
   color: var(--color-secondary);
 }
-.nav-links-light a {
+.nav-links-light a,
+.nav-links-light :deep(a) {
   color: var(--color-text);
 }
-.nav-links-blue a {
+.nav-links-blue a,
+.nav-links-blue :deep(a) {
   color: white;
 }
 
@@ -106,7 +127,8 @@ function scrollToSection(id: string) {
     gap: 0.75rem 1.25rem;
   }
 
-  .nav-links a {
+  .nav-links a,
+  .nav-links :deep(a) {
     font-size: 0.875rem;
   }
 }

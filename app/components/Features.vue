@@ -35,8 +35,33 @@ const features = [
     img: "/screenshots/feature-audiobooks.png",
     title: "Audiobooks for every taste",
     descriptions: [
-      "Biographies, short stories, sci-fi, literary summaries, crime stories, thrillers, and more.",
-      "Diverse topics: culture, history, science, politics, economics, food, technology, sports, and more.",
+      "Short chapters, real voices, and a story you actually want to finish.",
+    ],
+    tagGroups: [
+      {
+        label: "Genres",
+        tags: [
+          "Biographies",
+          "Short stories",
+          "Sci-fi",
+          "Literary summaries",
+          "Crime",
+          "Thrillers",
+        ],
+      },
+      {
+        label: "Topics",
+        tags: [
+          "Culture",
+          "History",
+          "Science",
+          "Politics",
+          "Economics",
+          "Food",
+          "Technology",
+          "Sports",
+        ],
+      },
     ],
   },
   {
@@ -69,7 +94,9 @@ function next() {
 <template>
   <div id="features" class="functionnalities">
     <h2 class="section-title">
-      Immersion at your own pace. With content you love.
+      <span class="highlight highlight-primary">Immersion</span> at your own
+      pace. With
+      <span class="highlight highlight-secondary">content you love</span>.
     </h2>
 
     <div class="features-carousel">
@@ -88,8 +115,8 @@ function next() {
             :src="currentFeature.img"
             :alt="currentFeature.title"
             class="feature-img"
-            width="1000"
-            height="1170"
+            width="2822"
+            height="2458"
             loading="lazy"
           />
         </div>
@@ -110,6 +137,19 @@ function next() {
             <i class="fa-duotone fa-solid fa-arrow-right-long"></i>
             {{ description }}
           </p>
+
+          <div
+            v-for="group in currentFeature.tagGroups"
+            :key="group.label"
+            class="feature-tag-group"
+          >
+            <span class="feature-tag-label">{{ group.label }}</span>
+            <ul class="feature-tags">
+              <li v-for="tag in group.tags" :key="tag" class="feature-tag">
+                {{ tag }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -141,21 +181,36 @@ function next() {
 .functionnalities {
   padding: var(--section-spacing) var(--page-gutter);
   background-color: var(--color-background);
-  opacity: 0.8;
   color: var(--color-text);
 }
 
 .section-title {
   font-size: clamp(1.8rem, 1.5rem + 1vw, 2.4rem);
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
-  margin-bottom: 1rem;
+}
+
+.highlight {
+  display: inline-block;
+  padding: 0 0.4em;
+  border-radius: 0.2em;
+  line-height: 1.3;
+}
+
+.highlight-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.highlight-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
 }
 
 .features-carousel {
   width: min(100%, var(--page-max-width));
   margin: 0 auto;
-  padding: 1rem 0 0;
+  padding: 2rem 0 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -208,6 +263,37 @@ function next() {
 
 .feature-card-title {
   font-size: clamp(1.2rem, 1rem + 0.6vw, 1.6rem);
+}
+
+.feature-tag-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.feature-tag-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.feature-tag {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background-color: rgba(132, 155, 255, 0.12);
+  border: 1px solid rgba(132, 155, 255, 0.35);
+  color: var(--color-primary-dark);
 }
 
 .feature-icon {

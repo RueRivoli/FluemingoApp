@@ -16,7 +16,7 @@ const props = withDefaults(
   <div id="overview" class="banner">
     <div class="banner-content">
       <div class="banner-content-left">
-        <h2>Everything you need to stay consistent</h2>
+        <h2>Everything you need to remain consistent</h2>
         <ul>
           <li>7+ News Articles per week</li>
           <li>5+ New Audiobooks per month</li>

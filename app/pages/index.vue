@@ -16,6 +16,8 @@ const supportUrl = '' // ex: 'mailto:support@example.com'
     <!-- Hero (navbar incluse) -->
     <Hero :app-store-url="appStoreUrl" />
     <Features />
+    <VocabularyGrowth />
+    <Faq />
     <Testimonials />
     <!-- <Updates /> -->
     <Banner />

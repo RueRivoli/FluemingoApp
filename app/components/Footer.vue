@@ -10,16 +10,16 @@ const currentYear = new Date().getFullYear();
         <ul>
           <h3 class="footer-links-item-title">The App</h3>
             <li>
-              <a href="#features" rel="noopener">Features</a>
+              <NuxtLink to="/#features">Features</NuxtLink>
             </li>
             <li>
-              <a href="#features" rel="noopener">Preview</a>
+              <NuxtLink to="/#features">Preview</NuxtLink>
             </li>
             <li>
-              <a href="#testimonials" rel="noopener">Testimonials</a>
+              <NuxtLink to="/#testimonials">Testimonials</NuxtLink>
             </li>
             <!-- <li>
-              <a href="#updates" rel="noopener">Updates</a>
+              <NuxtLink to="/#updates">Updates</NuxtLink>
             </li> -->
         </ul>
       </div>

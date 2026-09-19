@@ -11,11 +11,19 @@ function avatarUrl(seed: string) {
   return `${DICEBEAR_API}?${params.toString()}`;
 }
 
+type Store = "appstore" | "playstore";
+
+// Logos dans public/logo/ (servis à /logo/...)
+const storeInfo: Record<Store, { label: string; logo: string }> = {
+  appstore: { label: "App Store", logo: "/logo/appstore.webp" },
+  playstore: { label: "Play Store", logo: "/logo/playstorelogo.png" },
+};
+
 const testimonials = [
   {
     date: "2026-08-14",
     name: "Manuelita1212",
-    device: "Apple iOS",
+    store: "appstore" as Store,
     mark: 5,
     review:
       "Application originale, très agréable à utiliser et pratique ! Je recommande +++",
@@ -24,7 +32,7 @@ const testimonials = [
   {
     name: "Djocmoa",
     date: "2026-08-10",
-    device: "Apple iOS",
+    store: "appstore" as Store,
     mark: 5,
     review: "Super application ludique pour apprendre l’anglais !",
     title: "Super",
@@ -32,7 +40,7 @@ const testimonials = [
   {
     name: "florent711",
     date: "2026-08-06",
-    device: "Apple iOS",
+    store: "appstore" as Store,
     mark: 5,
     review: "The design is very nice !",
     title: "Like it",
@@ -40,7 +48,7 @@ const testimonials = [
   {
     name: "Erkan",
     date: "2026-08-18",
-    device: "Apple iOS",
+    store: "appstore" as Store,
     mark: 5,
     review: "French content is very nice. Flashcards are smooth",
     title: "Great!",
@@ -82,28 +90,30 @@ const getDate = (date: string) => {
               <span class="feature-date">{{ getDate(feature.date) }}</span>
             </div>
           </div>
-          <div class="feature-stars">
-            <i
-              v-for="n in feature.mark"
-              :key="n"
-              class="fa-solid fa-star feature-star"
-            ></i>
-          </div>
-          <div class="feature-device">
-            Device:
-            <span class="feature-device-text">
-              <i class="fa-light fa-mobile mr-1"></i>
-              {{ feature.device }}
+          <div class="feature-rating">
+            <div class="feature-stars">
+              <i
+                v-for="n in feature.mark"
+                :key="n"
+                class="fa-solid fa-star feature-star"
+              ></i>
+            </div>
+            <span class="feature-store">
+              <NuxtImg
+                :src="storeInfo[feature.store].logo"
+                :alt="storeInfo[feature.store].label"
+                class="feature-store-logo"
+                width="40"
+                height="40"
+                loading="lazy"
+              />
+              {{ storeInfo[feature.store].label }}
             </span>
           </div>
           <div class="feature-desc">
             <div></div>
-            <div class="feature-review">"{{ feature.review }}"</div>
+            <div class="feature-review">{{ feature.review }}</div>
             <div class="feature-quote-right"></div>
-          </div>
-          <div class="feature-name">
-            <h3 class="feature-title">{{ feature.name }}</h3>
-            <span class="feature-date">{{ getDate(feature.date) }}</span>
           </div>
         </article>
       </div>
@@ -171,7 +181,7 @@ const getDate = (date: string) => {
   gap: 1rem;
   background-color: white;
   border: 1px solid black;
-  padding: 2rem;
+  padding: 2.5rem 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: black;
@@ -186,8 +196,8 @@ const getDate = (date: string) => {
 }
 
 .feature-avatar {
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -197,12 +207,20 @@ const getDate = (date: string) => {
 
 .feature-review {
   font-size: 1rem;
-  color: white;
-  background-color: var(--color-primary);
-  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  /* background-color: var(--color-primary);
+  border: 1px solid var(--color-border); */
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
+.feature-rating {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .feature-stars {
   display: flex;
   gap: 0.25rem;
@@ -213,13 +231,24 @@ const getDate = (date: string) => {
   font-size: 1rem;
 }
 
-.feature-device-text {
-  font-size: 0.8rem;
+.feature-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+  border-radius: 999px;
   color: var(--color-text-muted);
-  background-color: var(--color-background);
-  border: 1px solid var(--color-border);
-  padding: 0.5rem;
-  border-radius: 0.5rem;
+  /* background-color: var(--color-background);
+  border: 1px solid var(--color-border-muted);*/
+}
+
+.feature-store-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: cover; /* recadre les marges transparentes du logo App Store */
 }
 .feature-icon {
   font-size: 2rem;
