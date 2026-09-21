@@ -115,8 +115,8 @@ function next() {
             :src="currentFeature.img"
             :alt="currentFeature.title"
             class="feature-img"
-            width="2822"
-            height="2458"
+            width="720"
+            height="627"
             loading="lazy"
           />
         </div>
