@@ -1,6 +1,8 @@
 [build]
   command = "npm ci && npm run generate"
-  publish = ".output/public"
+  # Sur Netlify, Nitro détecte le preset `netlify-static` et génère le site dans `dist`
+  # (et non `.output/public` comme en local).
+  publish = "dist"
 
 [build.environment]
   # npm 10 ne sait pas installer ce projet : son résolveur plante sur la peer dep
