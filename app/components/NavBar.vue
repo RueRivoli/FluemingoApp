@@ -47,7 +47,7 @@ async function scrollToSection(id: string) {
           >Features</a
         >
       </li>
-      <li>
+      <!-- <li>
         <Button
           as="router-link"
           to="/auth"
@@ -56,7 +56,7 @@ async function scrollToSection(id: string) {
           size="small"
           class="start-btn"
         />
-      </li>
+      </li> -->
     </ul>
   </nav>
 </template>
