@@ -27,10 +27,10 @@ const currentYear = new Date().getFullYear();
         <ul>
           <h3 class="footer-links-item-title">Company</h3>
           <!-- <li>
-            <a href="/blog" rel="noopener">Blog</a>
+            <a href="/blog/" rel="noopener">Blog</a>
           </li> -->
             <li>
-              <a href="/contact" rel="noopener">Contact</a>
+              <a href="/contact/" rel="noopener">Contact</a>
             </li>
         </ul>
       </div>
@@ -38,13 +38,13 @@ const currentYear = new Date().getFullYear();
         <ul>
           <h3 class="footer-links-item-title">Legal</h3>
           <li>
-            <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+            <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>
           </li>
           <li>
-            <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>
+            <a href="/terms/" target="_blank" rel="noopener">Terms of Service</a>
           </li>
           <li>
-            <a href="/user-data-deletion" target="_blank" rel="noopener">Data Deletion</a>
+            <a href="/user-data-deletion/" target="_blank" rel="noopener">Data Deletion</a>
           </li>
         </ul>
       </div>

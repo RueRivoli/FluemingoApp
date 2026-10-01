@@ -47,9 +47,16 @@ async function scrollToSection(id: string) {
           >Features</a
         >
       </li>
-      <!-- <li>
-        <NuxtLink to="/auth">Start Here</NuxtLink>
-      </li> -->
+      <li>
+        <Button
+          as="router-link"
+          to="/auth"
+          label="Start Here"
+          severity="secondary"
+          size="small"
+          class="start-btn"
+        />
+      </li>
     </ul>
   </nav>
 </template>
@@ -87,25 +94,30 @@ async function scrollToSection(id: string) {
   padding: 0;
 }
 
-.nav-links a,
-.nav-links :deep(a) {
+.nav-links a:not(.p-button),
+.nav-links :deep(a:not(.p-button)) {
   font-size: 0.9375rem;
   font-weight: 500;
   text-decoration: none;
   transition: color 0.2s;
 }
 
-.nav-links a:hover,
-.nav-links :deep(a:hover) {
+.nav-links a:not(.p-button):hover,
+.nav-links :deep(a:not(.p-button):hover) {
   color: var(--color-secondary);
 }
-.nav-links-light a,
-.nav-links-light :deep(a) {
+.nav-links-light a:not(.p-button),
+.nav-links-light :deep(a:not(.p-button)) {
   color: var(--color-text);
 }
-.nav-links-blue a,
-.nav-links-blue :deep(a) {
+.nav-links-blue a:not(.p-button),
+.nav-links-blue :deep(a:not(.p-button)) {
   color: white;
+}
+
+.start-btn {
+  font-weight: 700;
+  text-decoration: none;
 }
 
 @media (max-width: 900px) {
@@ -130,8 +142,8 @@ async function scrollToSection(id: string) {
     gap: 0.75rem 1.25rem;
   }
 
-  .nav-links a,
-  .nav-links :deep(a) {
+  .nav-links a:not(.p-button),
+  .nav-links :deep(a:not(.p-button)) {
     font-size: 0.875rem;
   }
 }

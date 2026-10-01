@@ -29,9 +29,21 @@ function formatDate(date: string) {
   });
 }
 
-useHead({
+const site = useSiteConfig();
+// og:image must be absolute; fall back to the site-wide image when the post has none.
+const postImage = post.value.image
+  ? new URL(post.value.image, site.url).href
+  : undefined;
+
+useSeoMeta({
   title: `${post.value.title} — Fluemingo Blog`,
-  meta: [{ name: "description", content: post.value.description }],
+  description: post.value.description,
+  ogType: "article",
+  ogTitle: post.value.title,
+  ogDescription: post.value.description,
+  ogImage: postImage,
+  twitterImage: postImage,
+  articlePublishedTime: post.value.date,
 });
 </script>
 

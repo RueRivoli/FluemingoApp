@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import NavBar from '../components/NavBar.vue';
+
+useSeoMeta({
+  title: "Privacy Policy — Fluemingo",
+  description:
+    "How Fluemingo collects, uses and protects your personal data.",
+  ogTitle: "Privacy Policy — Fluemingo",
+  ogDescription:
+    "How Fluemingo collects, uses and protects your personal data.",
+});
 </script>
 
 <template>

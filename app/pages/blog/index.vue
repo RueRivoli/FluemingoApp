@@ -48,15 +48,13 @@ function formatDate(date: string) {
   });
 }
 
-useHead({
+useSeoMeta({
   title: "Blog — Fluemingo App",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Tips, methods and series recommendations to learn a language faster with Fluemingo.",
-    },
-  ],
+  description:
+    "Tips, methods and series recommendations to learn a language faster with Fluemingo.",
+  ogTitle: "Blog — Fluemingo App",
+  ogDescription:
+    "Tips, methods and series recommendations to learn a language faster with Fluemingo.",
 });
 </script>
 

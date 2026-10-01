@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import NavBar from '../components/NavBar.vue';
 import Footer from '../components/Footer.vue';
+
+useSeoMeta({
+  title: "Updates — Fluemingo",
+  description:
+    "The latest Fluemingo releases, new features and improvements.",
+  ogTitle: "Updates — Fluemingo",
+  ogDescription:
+    "The latest Fluemingo releases, new features and improvements.",
+});
 </script>
 
 <template>

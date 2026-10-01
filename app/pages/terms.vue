@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import NavBar from '../components/NavBar.vue';
 import Footer from '../components/Footer.vue';
+
+useSeoMeta({
+  title: "Terms of Service — Fluemingo",
+  description:
+    "The terms and conditions for using the Fluemingo app and website.",
+  ogTitle: "Terms of Service — Fluemingo",
+  ogDescription:
+    "The terms and conditions for using the Fluemingo app and website.",
+});
 </script>
 
 <template>

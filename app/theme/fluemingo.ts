@@ -35,6 +35,30 @@ const FluemingoPreset = definePreset(Aura, {
       },
     },
   },
+  components: {
+    // `severity="secondary"` buttons use the brand yellow (--color-secondary)
+    // instead of Aura's default gray.
+    button: {
+      colorScheme: {
+        light: {
+          root: {
+            secondary: {
+              background: "#F6D75A",
+              hoverBackground: "#f2cc3a",
+              activeBackground: "#e6bd25",
+              borderColor: "#F6D75A",
+              hoverBorderColor: "#f2cc3a",
+              activeBorderColor: "#e6bd25",
+              color: "#1A1A1A",
+              hoverColor: "#1A1A1A",
+              activeColor: "#1A1A1A",
+              focusRing: { color: "#e6bd25", shadow: "none" },
+            },
+          },
+        },
+      },
+    },
+  },
 });
 
 export default {

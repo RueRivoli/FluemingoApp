@@ -10,8 +10,17 @@ export default defineNuxtConfig({
     "@fortawesome/fontawesome-pro/css/duotone.min.css",
   ],
 
+  // Used by @nuxtjs/sitemap, @nuxtjs/robots and the canonical / og:url tags (app/app.vue).
+  // Netlify redirects /page to /page/, so every public URL ends with a slash.
+  site: {
+    url: "https://fluemingo-app.com",
+    name: "Fluemingo",
+    trailingSlash: true,
+  },
+
   app: {
     head: {
+      htmlAttrs: { lang: "en" },
       title: "Fluemingo App — Learn & Progress Faster",
       meta: [
         {
@@ -19,6 +28,14 @@ export default defineNuxtConfig({
           content: "Learn & Progress Faster with Fluemingo App",
         },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
+        // Defaults for link previews; pages override title/description via useSeoMeta.
+        { property: "og:site_name", content: "Fluemingo" },
+        { property: "og:type", content: "website" },
+        { property: "og:image", content: "https://fluemingo-app.com/og-image.png" },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: "https://fluemingo-app.com/og-image.png" },
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -49,14 +66,34 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-07-15",
-  modules: ["@nuxt/image", "@nuxt/content", "@primevue/nuxt-module"],
+  modules: [
+    "@nuxt/image",
+    "@nuxt/content",
+    "@primevue/nuxt-module",
+    "@nuxtjs/robots",
+    "@nuxtjs/sitemap",
+  ],
+
+  // Links point straight at /page/ instead of bouncing through Netlify's 301.
+  experimental: {
+    defaults: { nuxtLink: { trailingSlash: "append" } },
+  },
+
+  // Private pages: <meta name="robots" content="noindex"> and left out of the sitemap.
+  // (Not Disallowed in robots.txt on purpose: crawlers must fetch the page to see noindex.)
+  routeRules: {
+    "/auth": { robots: false },
+    "/app/**": { robots: false },
+  },
+
+  sitemap: {
+    exclude: ["/auth/**", "/app/**"],
+  },
 
   primevue: {
     importTheme: { from: "@/theme/fluemingo.ts" },
   },
 
-  // Overridable at build time with NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_ANON_KEY.
-  // Defaults to the testing project; switch to https://mpsvgcdpovjchxirsdee.supabase.co for production.
   // Pages only reached by redirect are not found by the crawler: list them explicitly.
   nitro: {
     prerender: {
@@ -64,6 +101,8 @@ export default defineNuxtConfig({
     },
   },
 
+  // Overridable at build time with NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_ANON_KEY.
+  // Defaults to the testing project; switch to https://mpsvgcdpovjchxirsdee.supabase.co for production.
   runtimeConfig: {
     public: {
       supabaseUrl: "https://smkvrbluonhsbjjhrdch.supabase.co",

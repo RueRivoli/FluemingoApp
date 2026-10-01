@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import NavBar from '../components/NavBar.vue';
 import Footer from '../components/Footer.vue';
+
+useSeoMeta({
+  title: "User Data Deletion — Fluemingo",
+  description:
+    "How to delete your Fluemingo account and personal data, what is removed and how long it takes.",
+  ogTitle: "User Data Deletion — Fluemingo",
+  ogDescription:
+    "How to delete your Fluemingo account and personal data, what is removed and how long it takes.",
+});
 </script>
 
 <template>

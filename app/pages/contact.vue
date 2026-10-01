@@ -58,6 +58,15 @@ async function handleSubmit(e: Event) {
         : "Something went wrong. Please try again or email us at contact@fluemingo-app.com";
   }
 }
+
+useSeoMeta({
+  title: "Contact — Fluemingo",
+  description:
+    "Questions, support or feedback about Fluemingo? Get in touch with our team — we reply within 24–48 hours.",
+  ogTitle: "Contact — Fluemingo",
+  ogDescription:
+    "Questions, support or feedback about Fluemingo? Get in touch with our team — we reply within 24–48 hours.",
+});
 </script>
 
 <template>

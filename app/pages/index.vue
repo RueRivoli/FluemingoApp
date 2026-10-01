@@ -9,6 +9,14 @@ const appStoreUrl = 'https://apps.apple.com/app/id6757644637'
 const privacyUrl = '' // ex: '/privacy' ou URL externe
 const supportUrl = '' // ex: 'mailto:support@example.com'
 
+useSeoMeta({
+  title: "Fluemingo — Learn languages with your favorite content",
+  description:
+    "Learn English or French with daily news articles, audiobooks and flashcards. Build a strong and lasting vocabulary with Fluemingo, on iOS and Android.",
+  ogTitle: "Fluemingo — Learn languages with your favorite content",
+  ogDescription:
+    "Learn English or French with daily news articles, audiobooks and flashcards. Build a strong and lasting vocabulary with Fluemingo, on iOS and Android.",
+});
 </script>
 
 <template>
