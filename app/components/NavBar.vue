@@ -47,6 +47,9 @@ async function scrollToSection(id: string) {
           >Features</a
         >
       </li>
+      <!-- <li>
+        <NuxtLink to="/auth">Start Here</NuxtLink>
+      </li> -->
     </ul>
   </nav>
 </template>

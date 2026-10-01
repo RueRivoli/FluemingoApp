@@ -49,7 +49,27 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-07-15",
-  modules: ["@nuxt/image", "@nuxt/content"],
+  modules: ["@nuxt/image", "@nuxt/content", "@primevue/nuxt-module"],
+
+  primevue: {
+    importTheme: { from: "@/theme/fluemingo.ts" },
+  },
+
+  // Overridable at build time with NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_ANON_KEY.
+  // Defaults to the testing project; switch to https://mpsvgcdpovjchxirsdee.supabase.co for production.
+  // Pages only reached by redirect are not found by the crawler: list them explicitly.
+  nitro: {
+    prerender: {
+      routes: ["/auth", "/app/home"],
+    },
+  },
+
+  runtimeConfig: {
+    public: {
+      supabaseUrl: "https://smkvrbluonhsbjjhrdch.supabase.co",
+      supabaseAnonKey: "",
+    },
+  },
 
   image: {
     domains: ["api.dicebear.com"],
