@@ -1,8 +1,11 @@
+import tailwindcss from "@tailwindcss/vite";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
   css: [
+    "~/assets/css/tailwind.css",
     "~/assets/css/variables.css",
     "@fortawesome/fontawesome-pro/css/fontawesome.min.css",
     "@fortawesome/fontawesome-pro/css/solid.min.css",
@@ -66,6 +69,10 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-07-15",
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
   modules: [
     "@nuxt/image",
     "@nuxt/content",
@@ -81,9 +88,10 @@ export default defineNuxtConfig({
 
   // Private pages: <meta name="robots" content="noindex"> and left out of the sitemap.
   // (Not Disallowed in robots.txt on purpose: crawlers must fetch the page to see noindex.)
+  // They are client-only (SPA): no SEO needed, and auth only exists in the browser.
   routeRules: {
-    "/auth": { robots: false },
-    "/app/**": { robots: false },
+    "/auth": { ssr: false, robots: false },
+    "/app/**": { ssr: false, robots: false },
   },
 
   sitemap: {
@@ -95,9 +103,10 @@ export default defineNuxtConfig({
   },
 
   // Pages only reached by redirect are not found by the crawler: list them explicitly.
+  // /app/ is the SPA shell every /app/* URL is rewritten to (public/_redirects).
   nitro: {
     prerender: {
-      routes: ["/auth", "/app/home"],
+      routes: ["/auth", "/app"],
     },
   },
 

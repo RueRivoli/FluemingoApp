@@ -66,5 +66,8 @@ export default {
   options: {
     // The marketing site is light-only: never switch to the dark palette.
     darkModeSelector: false,
+    // PrimeVue styles go in a CSS layer placed before Tailwind's utilities
+    // (see assets/css/tailwind.css), so classes like bg-secondary can override components.
+    cssLayer: { name: "primevue", order: "theme, base, primevue, utilities" },
   },
 };

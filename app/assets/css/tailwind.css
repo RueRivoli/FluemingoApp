@@ -1,0 +1,59 @@
+/* Tailwind without Preflight: the site already has its own reset (variables.css),
+   and Preflight would restyle every existing page. */
+@layer theme, base, primevue, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@plugin "tailwindcss-primeui";
+
+/* Colors: single source of truth. They become Tailwind utilities
+   (bg-secondary, text-primary-dark, ...) and CSS variables usable anywhere (var(--color-primary)).
+   "static" emits every variable, even those no Tailwind class uses. */
+@theme static {
+  /* Couleurs principales */
+  --color-primary: #849bff;
+  --color-primary-dark: #5a67d8;
+  --color-secondary: #f6d75a;
+  --color-secondary-dark: #6b4399;
+  --color-neutral: #1a1a1a;
+
+  /* Texte */
+  --color-text-primary: #1a1a1a;
+  --color-text-muted: #374151;
+  --color-text-light: #555;
+
+  /* Fond */
+  --color-background: #f5f5f5;
+  --color-bg: #ffffff;
+  --color-bg-muted: #f8f9fa;
+  --color-bg-dark: #1a1a1a;
+
+  /* Bordures */
+  --color-border: rgba(102, 126, 234, 0.1);
+  --color-border-muted: #eee;
+
+  /* Langues (filtres blog) */
+  --color-lang-en: #001aa0;
+
+  /* Utilitaires */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+
+  --color-outline: #000000;
+
+  /* CEFR Level Colors */
+  --color-cefr-a1: #16a34a; /* green */
+  --color-cefr-a2: #f59e0b; /* amber */
+  --color-cefr-b1: #2563eb; /* blue */
+  --color-cefr-b2: #9333ea; /* purple */
+  --color-cefr-c1: #e11d48; /* raspberry */
+
+  /* Pastel CEFR colors: the level color at 18% over the surface,
+     same as levelPastelColor() in the mobile app (Color.alphaBlend). */
+  --color-cefr-a1-pastel: color-mix(in srgb, var(--color-cefr-a1) 18%, var(--color-bg));
+  --color-cefr-a2-pastel: color-mix(in srgb, var(--color-cefr-a2) 18%, var(--color-bg));
+  --color-cefr-b1-pastel: color-mix(in srgb, var(--color-cefr-b1) 18%, var(--color-bg));
+  --color-cefr-b2-pastel: color-mix(in srgb, var(--color-cefr-b2) 18%, var(--color-bg));
+  --color-cefr-c1-pastel: color-mix(in srgb, var(--color-cefr-c1) 18%, var(--color-bg));
+  --color-primary-pastel: color-mix(in srgb, var(--color-primary-dark) 18%, var(--color-bg));
+}
