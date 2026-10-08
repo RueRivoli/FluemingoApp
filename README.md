@@ -1,20 +1,24 @@
 # Market Site for Fluemingo Mobile App
 
+The Fluemingo Web Application associated with its mobile application (Flutter)
 Landing page with Nuxt for a Mobile App
 
-## Démarrage
+- **Marketing site** (landing, blog, legal pages): prerendered as static HTML (`nuxt generate`), indexed by search engines.
+- **Web app** (`/auth` and `/app/**`): client-side rendered SPA (`ssr: false`), behind Supabase auth, not indexed.
+
+## Start
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 npm install
 
-# Lancer le serveur de dev (http://localhost:3000)
+# Run the dev server (http://localhost:3000)
 npm run dev
 
-# Build pour la production
+# Build for production
 npm run build
 
-# Générer un site statique (déploiement Netlify, Vercel, etc.)
+# Generate a static site (Netlify deployment, Vercel, etc.)
 npm run generate
 ```
 
@@ -27,11 +31,31 @@ npm run generate
 ## Structure
 
 ```
-├── app.vue
-├── nuxt.config.ts
-├── pages/
-│   └── index.vue    # Page d’accueil (landing)
-├── layouts/
-│   └── default.vue
-└── public/          # Fichiers statiques (images, favicon)
+├── app/
+│   ├── app.vue              # Root component (global SEO / canonical tags)
+│   ├── assets/css/          # Tailwind entry + design tokens (variables.css)
+│   ├── components/          # Auto-imported components (landing sections, NavBar, AppSidebar, User*…)
+│   │   └── content/         # Components usable inside Markdown blog posts
+│   ├── composables/         # useSupabase (browser-only Supabase client)
+│   ├── layouts/
+│   │   ├── default.vue      # Marketing site layout
+│   │   └── app.vue          # Logged-in app layout (sidebar)
+│   ├── middleware/
+│   │   └── auth.ts          # Guards /app/*: redirects to /auth without a session
+│   ├── pages/
+│   │   ├── index.vue        # Landing page
+│   │   ├── auth.vue         # Log in / sign up / password reset
+│   │   ├── blog/            # Blog index + [slug] articles (Nuxt Content)
+│   │   ├── app.vue          # Parent of /app/*: app layout + auth middleware
+│   │   ├── app/             # Logged-in SPA (home, browse/…)
+│   │   └── *.vue            # Legal & info pages (terms, privacy-policy, contact…)
+│   ├── plugins/
+│   ├── stores/              # Pinia stores (user.ts: logged-in user)
+│   ├── theme/               # PrimeVue theme preset
+│   └── utils/               # Auto-imported constants & data (constants.ts…)
+├── content/blog/            # Markdown blog posts
+├── content.config.ts        # Nuxt Content collections
+├── public/                  # Static files (images, favicons, _redirects)
+├── netlify.toml             # Netlify build & deploy config
+└── nuxt.config.ts
 ```
