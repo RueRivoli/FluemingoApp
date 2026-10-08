@@ -4,8 +4,9 @@
 export default defineNuxtRouteMiddleware(async () => {
   if (import.meta.server) return;
 
-  const { data } = await useSupabase().auth.getSession();
-  if (!data.session) {
-    return navigateTo("/auth", { replace: true });
+  const userStore = useUserStore();
+  await userStore.init();
+  if (!userStore.isLoggedIn) {
+    return navigateTo(AUTH_PATH, { replace: true });
   }
 });

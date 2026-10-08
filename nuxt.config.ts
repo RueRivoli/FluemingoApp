@@ -3,7 +3,6 @@ import tailwindcss from "@tailwindcss/vite";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-
   css: [
     "~/assets/css/tailwind.css",
     "~/assets/css/variables.css",
@@ -34,11 +33,17 @@ export default defineNuxtConfig({
         // Defaults for link previews; pages override title/description via useSeoMeta.
         { property: "og:site_name", content: "Fluemingo" },
         { property: "og:type", content: "website" },
-        { property: "og:image", content: "https://fluemingo-app.com/og-image.png" },
+        {
+          property: "og:image",
+          content: "https://fluemingo-app.com/og-image.png",
+        },
         { property: "og:image:width", content: "1200" },
         { property: "og:image:height", content: "630" },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:image", content: "https://fluemingo-app.com/og-image.png" },
+        {
+          name: "twitter:image",
+          content: "https://fluemingo-app.com/og-image.png",
+        },
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -79,6 +84,7 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
+    "@pinia/nuxt",
   ],
 
   // Links point straight at /page/ instead of bouncing through Netlify's 301.

@@ -2,13 +2,14 @@
 import { ref } from "vue";
 
 const route = useRoute();
+const userStore = useUserStore();
 
 const signingOut = ref(false);
 
 async function logOut() {
   signingOut.value = true;
-  await useSupabase().auth.signOut();
-  await navigateTo("/auth", { replace: true });
+  await userStore.signOut();
+  await navigateTo(AUTH_PATH, { replace: true });
 }
 
 // Static menu: "Browse" is a fixed group header, not a collapsible panel.
@@ -48,7 +49,7 @@ function isActive(path?: string) {
 <template>
   <nav class="app-sidebar" aria-label="App navigation">
     <NuxtLink to="/app/home" class="sidebar-logo" aria-label="Home">
-      <UserBadge full-name="flgallois" />
+      <UserBadge :full-name="userStore.fullName" :avatar-url="userStore.avatarUrl" />
     </NuxtLink>
 
     <Menu
