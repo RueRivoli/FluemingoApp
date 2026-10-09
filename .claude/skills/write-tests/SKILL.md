@@ -2,11 +2,11 @@ Write tests
 Write documented Jest tests for an existing unit, following CLAUDE.md §7. Tests describe what the unit does for its users, so they must still pass after any refactor that keeps that behaviour.
 
 1. Identify the scope
-A single file: test that file.
+   A single file: test that file.
 
-A folder or "everything missing": list the units with no co-located *.spec.ts:
+A folder or "everything missing": list the units with no co-located \*.spec.ts:
 
-```bash
+````bash
 
 for f in $(find app/components app/composables app/utils app/stores \( -name '*.vue' -o -name '*.ts' \) ! -name '*.spec.ts' 2>/dev/null); do
   [ -f "${f%.*}.spec.ts" ] || echo "$f"
@@ -168,3 +168,4 @@ Tell the user:
 which spec files were created or updated
 the behaviours now covered, and the coverage before and after when it was measured
 any bug found, or code that was hard to test, with the suggested fix
+````
