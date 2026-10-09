@@ -1,0 +1,2 @@
+# /app/* is a client-side SPA: serve its shell for any URL that has no prerendered file.
+/app/*  /app/index.html  200

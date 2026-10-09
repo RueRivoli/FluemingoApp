@@ -1,7 +1,6 @@
 # Market Site for Fluemingo Mobile App
 
-The Fluemingo Web Application associated with its mobile application (Flutter)
-Landing page with Nuxt for a Mobile App
+The Fluemingo Web Application associated with its mobile application Fluemingo (developed with Flutter)
 
 - **Marketing site** (landing, blog, legal pages): prerendered as static HTML (`nuxt generate`), indexed by search engines.
 - **Web app** (`/auth` and `/app/**`): client-side rendered SPA (`ssr: false`), behind Supabase auth, not indexed.
