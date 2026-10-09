@@ -7,26 +7,38 @@ import {
   ref,
   watch,
 } from "vue";
+
 import type {
   AuthChangeEvent,
   Session,
   Subscription,
 } from "@supabase/supabase-js";
 
-useHead({ title: "Log in — Fluemingo" });
+import { HOME_PATH } from "../utils/constants";
+
+useHead({ title: "Authentify — Fluemingo" });
 
 // Where users land once they are authenticated.
-const HOME_PATH = "/app/home";
 
-type Mode = "signin" | "signup" | "forgot" | "recovery";
+// "verify": sign-up step 2, the user types the code emailed to prove they own
+// the address. Supabase's "Confirm email" setting stays off for the mobile app,
+// so the web checks the email itself with an OTP.
+type Mode = "signin" | "signup" | "verify" | "forgot" | "recovery";
+
+const RESEND_COOLDOWN_SECONDS = 60;
+// Must match "Email OTP Length" in Supabase (Authentication → Providers → Email).
+const OTP_LENGTH = 8;
 
 const mode = ref<Mode>("signin");
 const form = reactive({ email: "", password: "" });
 const status = ref<"idle" | "loading">("idle");
 const errorMessage = ref("");
 const infoMessage = ref("");
+const otpCode = ref("");
+const resendIn = ref(0);
 const session = ref<Session | null>(null);
 let authSubscription: Subscription | null = null;
+let resendTimer: ReturnType<typeof setInterval> | null = null;
 
 // The switch mirrors the mockup: off = Log In, on = Sign Up.
 const isSignUp = computed({
@@ -39,6 +51,7 @@ const submitLabel = computed(
     ({
       signin: "Log In",
       signup: "Create my account",
+      verify: "Verify my email",
       forgot: "Send reset link",
       recovery: "Update password",
     })[mode.value],
@@ -62,6 +75,33 @@ function redirectUrl() {
   return `${window.location.origin}/auth`;
 }
 
+// Emails a one-time code; creates the account on first use. No redirect URL, so
+// the "Magic Link" email template must show {{ .Token }}.
+async function sendCode() {
+  const { error } = await useSupabase().auth.signInWithOtp({
+    email: form.email,
+    options: { shouldCreateUser: true },
+  });
+  if (error) throw error;
+
+  resendIn.value = RESEND_COOLDOWN_SECONDS;
+  if (resendTimer) clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    resendIn.value -= 1;
+    if (resendIn.value <= 0 && resendTimer) {
+      clearInterval(resendTimer);
+      resendTimer = null;
+    }
+  }, 1000);
+}
+
+function resendCode() {
+  return run(async () => {
+    await sendCode();
+    infoMessage.value = `A new code is on its way to ${form.email}.`;
+  });
+}
+
 async function run(action: () => Promise<void>) {
   resetMessages();
   status.value = "loading";
@@ -69,13 +109,15 @@ async function run(action: () => Promise<void>) {
     await action();
   } catch (err) {
     errorMessage.value =
-      err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      err instanceof Error
+        ? err.message
+        : "Something went wrong. Please try again.";
   } finally {
     status.value = "idle";
   }
 }
 
-function signInWithProvider(provider: "google" | "facebook") {
+function signInWithProvider(provider: "google" | "apple" | "facebook") {
   return run(async () => {
     const { error } = await useSupabase().auth.signInWithOAuth({
       provider,
@@ -97,17 +139,28 @@ function handleSubmit() {
       if (error) throw error;
       form.password = "";
     } else if (mode.value === "signup") {
-      const { data, error } = await auth.signUp({
+      // The password is kept in the form and set once the email is verified.
+      await sendCode();
+      otpCode.value = "";
+      setMode("verify");
+    } else if (mode.value === "verify") {
+      const { error } = await auth.verifyOtp({
         email: form.email,
-        password: form.password,
-        options: { emailRedirectTo: redirectUrl() },
+        token: otpCode.value,
+        type: "email",
       });
       if (error) throw error;
-      form.password = "";
-      // With email confirmation enabled, no session is returned until the link is clicked.
-      if (!data.session) {
-        infoMessage.value = `Almost there! Check ${form.email} to confirm your account.`;
+
+      // An existing account (e.g. created on mobile) gets the new password too:
+      // the code just proved the user owns the email, as a password reset would.
+      const { error: passwordError } = await auth.updateUser({
+        password: form.password,
+      });
+      if (passwordError && passwordError.code !== "same_password") {
+        throw passwordError;
       }
+      form.password = "";
+      await navigateTo(HOME_PATH, { replace: true });
     } else if (mode.value === "forgot") {
       const { error } = await auth.resetPasswordForEmail(form.email, {
         redirectTo: redirectUrl(),
@@ -118,17 +171,18 @@ function handleSubmit() {
       const { error } = await auth.updateUser({ password: form.password });
       if (error) throw error;
       form.password = "";
-      mode.value = "signin";
-      infoMessage.value = "Your password has been updated.";
+      // The recovery link already signed the user in.
+      await navigateTo(HOME_PATH, { replace: true });
     }
   });
 }
 
-// Any successful login (password, OAuth callback, email confirmation link,
-// existing session) sends the user to the app — except during a password
-// reset, where they must first choose a new password.
+// Any successful login (password, OAuth callback, existing session) sends the
+// user to the app — except during a password reset, where they must first
+// choose a new password, and during sign-up verification, which redirects
+// itself once the password is set.
 watch(session, (current) => {
-  if (current && mode.value !== "recovery") {
+  if (current && mode.value !== "recovery" && mode.value !== "verify") {
     navigateTo(HOME_PATH, { replace: true });
   }
 });
@@ -151,20 +205,27 @@ onMounted(async () => {
 
   try {
     const auth = useSupabase().auth;
-    const { data } = await auth.getSession();
-    session.value = data.session;
+    // Subscribe before awaiting anything: the client exchanges the reset link's
+    // ?code= while it initializes and fires PASSWORD_RECOVERY right then, so a
+    // listener added after getSession() would miss it and the user would be
+    // sent to the app without choosing a new password.
     authSubscription = auth.onAuthStateChange(
       (event: AuthChangeEvent, newSession: Session | null) => {
-        session.value = newSession;
         if (event === "PASSWORD_RECOVERY") setMode("recovery");
+        session.value = newSession;
       },
     ).data.subscription;
+    const { data } = await auth.getSession();
+    session.value = data.session;
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err);
   }
 });
 
-onBeforeUnmount(() => authSubscription?.unsubscribe());
+onBeforeUnmount(() => {
+  authSubscription?.unsubscribe();
+  if (resendTimer) clearInterval(resendTimer);
+});
 </script>
 
 <template>
@@ -205,13 +266,19 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
         </NuxtLink>
 
         <!-- Logged in: the watcher above is redirecting to the app -->
-        <section v-if="session && mode !== 'recovery'" class="signed-in">
+        <section
+          v-if="session && mode !== 'recovery' && mode !== 'verify'"
+          class="signed-in"
+        >
           <ProgressSpinner style="width: 2.5rem; height: 2.5rem" />
           <p>Logging you in…</p>
         </section>
 
         <template v-else>
-          <div v-if="mode === 'signin' || mode === 'signup'" class="mode-switch">
+          <div
+            v-if="mode === 'signin' || mode === 'signup'"
+            class="mode-switch"
+          >
             <label
               for="mode-switch"
               :class="{ active: !isSignUp }"
@@ -227,7 +294,13 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
             >
           </div>
           <h2 v-else class="mode-title">
-            {{ mode === "forgot" ? "Reset your password" : "Choose a new password" }}
+            {{
+              mode === "forgot"
+                ? "Reset your password"
+                : mode === "verify"
+                  ? "Check your email"
+                  : "Choose a new password"
+            }}
           </h2>
 
           <template v-if="mode === 'signin' || mode === 'signup'">
@@ -236,28 +309,61 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
                 class="social-btn"
                 fluid
                 :disabled="isLoading"
+                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
+                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
                 @click="signInWithProvider('google')"
               >
                 <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
-                  <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
-                  <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-                  <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
-                  <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+                  <path
+                    fill="#FFC107"
+                    d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"
+                  />
                 </svg>
-                <span>{{ isSignUp ? "Sign up" : "Log in" }} with Google</span>
               </Button>
 
               <Button
                 class="social-btn"
                 fluid
                 :disabled="isLoading"
+                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
+                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
+                @click="signInWithProvider('apple')"
+              >
+                <svg class="social-icon" viewBox="0 0 384 512" aria-hidden="true">
+                  <path
+                    fill="#fff"
+                    d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"
+                  />
+                </svg>
+              </Button>
+
+              <Button
+                class="social-btn"
+                fluid
+                :disabled="isLoading"
+                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
+                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
                 @click="signInWithProvider('facebook')"
               >
                 <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
-                  <circle cx="24" cy="24" r="22" fill="#1877F2"/>
-                  <path fill="#fff" d="M30.6 30.4l1-6.4h-6.1v-4.2c0-1.8.9-3.5 3.6-3.5h2.8v-5.5s-2.5-.4-4.9-.4c-5 0-8.3 3-8.3 8.5V24h-5.6v6.4h5.6V46c1.1.2 2.3.3 3.5.3s2.3-.1 3.4-.3V30.4h5z"/>
+                  <circle cx="24" cy="24" r="22" fill="#1877F2" />
+                  <path
+                    fill="#fff"
+                    d="M30.6 30.4l1-6.4h-6.1v-4.2c0-1.8.9-3.5 3.6-3.5h2.8v-5.5s-2.5-.4-4.9-.4c-5 0-8.3 3-8.3 8.5V24h-5.6v6.4h5.6V46c1.1.2 2.3.3 3.5.3s2.3-.1 3.4-.3V30.4h5z"
+                  />
                 </svg>
-                <span>{{ isSignUp ? "Sign up" : "Log in" }} with Facebook</span>
               </Button>
             </div>
 
@@ -267,7 +373,21 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
           </template>
 
           <form class="auth-form" @submit.prevent="handleSubmit">
-            <div v-if="mode !== 'recovery'" class="field">
+            <div v-if="mode === 'verify'" class="field verify-field">
+              <p>
+                We sent a {{ OTP_LENGTH }}-digit code to <strong>{{ form.email }}</strong>.
+                Enter it below to confirm your email.
+              </p>
+              <InputOtp
+                v-model="otpCode"
+                :length="OTP_LENGTH"
+                integer-only
+                :disabled="isLoading"
+                aria-label="Verification code"
+              />
+            </div>
+
+            <div v-if="mode !== 'recovery' && mode !== 'verify'" class="field">
               <label for="email">Email</label>
               <InputText
                 id="email"
@@ -281,7 +401,7 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
               />
             </div>
 
-            <div v-if="mode !== 'forgot'" class="field">
+            <div v-if="mode !== 'forgot' && mode !== 'verify'" class="field">
               <label for="password">
                 {{ mode === "recovery" ? "New password" : "Password" }}
               </label>
@@ -289,7 +409,9 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
                 v-model="form.password"
                 input-id="password"
                 placeholder="password"
-                :autocomplete="mode === 'signin' ? 'current-password' : 'new-password'"
+                :autocomplete="
+                  mode === 'signin' ? 'current-password' : 'new-password'
+                "
                 :feedback="mode !== 'signin'"
                 toggle-mask
                 required
@@ -321,7 +443,22 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
               size="large"
               class="submit-btn"
               :loading="isLoading"
+              :disabled="mode === 'verify' && otpCode.length < OTP_LENGTH"
             />
+
+            <div v-if="mode === 'verify'" class="verify-links">
+              <button
+                type="button"
+                class="text-link"
+                :disabled="isLoading || resendIn > 0"
+                @click="resendCode"
+              >
+                {{ resendIn > 0 ? `Resend code (${resendIn}s)` : "Resend code" }}
+              </button>
+              <button type="button" class="text-link" @click="setMode('signup')">
+                Use another email
+              </button>
+            </div>
 
             <button
               v-if="mode === 'forgot'"
@@ -510,13 +647,12 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
 }
 
 .social-buttons {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
 .social-btn {
-  gap: 0.75rem;
   padding-block: 0.85rem;
   background: var(--color-neutral);
   border-color: var(--color-neutral);
@@ -575,6 +711,34 @@ onBeforeUnmount(() => authSubscription?.unsubscribe());
   color: var(--color-primary-dark);
   text-decoration: underline;
   cursor: pointer;
+}
+
+.text-link:disabled {
+  color: var(--color-text-light);
+  text-decoration: none;
+  cursor: default;
+}
+
+.verify-field {
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+/* 8 cells must fit a 320px-wide phone. */
+.verify-field :deep(.p-inputotp) {
+  gap: 0.35rem;
+}
+
+.verify-field :deep(.p-inputotp-input) {
+  width: min(2.5rem, calc((100vw - 2 * var(--page-gutter) - 7 * 0.35rem) / 8));
+  padding-inline: 0;
+}
+
+.verify-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .text-link.center {
