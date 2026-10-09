@@ -5,7 +5,7 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <h1 v-if="userStore.isLoggedIn">
+  <h1 v-if="userStore.isLoggedIn && !userStore.isProfileLoading">
     Welcome, <span class="accent">{{ userStore.fullName }}</span>
   </h1>
   <ProgressSpinner v-else style="width: 2.5rem; height: 2.5rem" />

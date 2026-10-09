@@ -8,8 +8,13 @@ const signingOut = ref(false);
 
 async function logOut() {
   signingOut.value = true;
-  await userStore.signOut();
-  await navigateTo(AUTH_PATH, { replace: true });
+  // The store forgets the user even when Supabase fails, so leave the app
+  // either way.
+  try {
+    await userStore.signOut();
+  } finally {
+    await navigateTo(AUTH_PATH, { replace: true });
+  }
 }
 
 // Static menu: "Browse" is a fixed group header, not a collapsible panel.
@@ -49,7 +54,18 @@ function isActive(path?: string) {
 <template>
   <nav class="app-sidebar" aria-label="App navigation">
     <NuxtLink to="/app/home" class="sidebar-logo" aria-label="Home">
-      <UserBadge :full-name="userStore.fullName" :avatar-url="userStore.avatarUrl" />
+      <!-- Same footprint as the badge, so the menu doesn't jump once the profile arrives. -->
+      <Skeleton
+        v-if="userStore.isProfileLoading"
+        width="10rem"
+        height="3rem"
+        border-radius="1.5rem"
+      />
+      <UserBadge
+        v-else
+        :full-name="userStore.fullName"
+        :avatar-url="userStore.avatarUrl"
+      />
     </NuxtLink>
 
     <Menu

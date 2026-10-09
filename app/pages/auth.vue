@@ -8,12 +8,9 @@ import {
   watch,
 } from "vue";
 
-import type {
-  AuthChangeEvent,
-  Session,
-  Subscription,
-} from "@supabase/supabase-js";
+import type { Session, Subscription } from "@supabase/supabase-js";
 
+import * as authService from "~/services/authService";
 import { HOME_PATH } from "../utils/constants";
 
 useHead({ title: "Authentify — Fluemingo" });
@@ -75,14 +72,8 @@ function redirectUrl() {
   return `${window.location.origin}/auth`;
 }
 
-// Emails a one-time code; creates the account on first use. No redirect URL, so
-// the "Magic Link" email template must show {{ .Token }}.
 async function sendCode() {
-  const { error } = await useSupabase().auth.signInWithOtp({
-    email: form.email,
-    options: { shouldCreateUser: true },
-  });
-  if (error) throw error;
+  await authService.sendEmailCode(form.email);
 
   resendIn.value = RESEND_COOLDOWN_SECONDS;
   if (resendTimer) clearInterval(resendTimer);
@@ -117,26 +108,14 @@ async function run(action: () => Promise<void>) {
   }
 }
 
-function signInWithProvider(provider: "google" | "apple" | "facebook") {
-  return run(async () => {
-    const { error } = await useSupabase().auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: redirectUrl() },
-    });
-    if (error) throw error;
-  });
+function signInWithProvider(provider: authService.OAuthProvider) {
+  return run(() => authService.signInWithProvider(provider, redirectUrl()));
 }
 
 function handleSubmit() {
   return run(async () => {
-    const auth = useSupabase().auth;
-
     if (mode.value === "signin") {
-      const { error } = await auth.signInWithPassword({
-        email: form.email,
-        password: form.password,
-      });
-      if (error) throw error;
+      await authService.signInWithPassword(form.email, form.password);
       form.password = "";
     } else if (mode.value === "signup") {
       // The password is kept in the form and set once the email is verified.
@@ -144,32 +123,20 @@ function handleSubmit() {
       otpCode.value = "";
       setMode("verify");
     } else if (mode.value === "verify") {
-      const { error } = await auth.verifyOtp({
-        email: form.email,
-        token: otpCode.value,
-        type: "email",
-      });
-      if (error) throw error;
+      await authService.verifyEmailCode(form.email, otpCode.value);
 
       // An existing account (e.g. created on mobile) gets the new password too:
       // the code just proved the user owns the email, as a password reset would.
-      const { error: passwordError } = await auth.updateUser({
-        password: form.password,
+      await authService.updatePassword(form.password, {
+        allowSamePassword: true,
       });
-      if (passwordError && passwordError.code !== "same_password") {
-        throw passwordError;
-      }
       form.password = "";
       await navigateTo(HOME_PATH, { replace: true });
     } else if (mode.value === "forgot") {
-      const { error } = await auth.resetPasswordForEmail(form.email, {
-        redirectTo: redirectUrl(),
-      });
-      if (error) throw error;
+      await authService.sendPasswordReset(form.email, redirectUrl());
       infoMessage.value = `If an account exists for ${form.email}, a reset link is on its way.`;
     } else {
-      const { error } = await auth.updateUser({ password: form.password });
-      if (error) throw error;
+      await authService.updatePassword(form.password);
       form.password = "";
       // The recovery link already signed the user in.
       await navigateTo(HOME_PATH, { replace: true });
@@ -200,23 +167,22 @@ function readRedirectError() {
 }
 
 onMounted(async () => {
+  // Fetch the app's code while the user types, so the redirect after login is instant.
+  void preloadRouteComponents(HOME_PATH);
+
   const redirectError = readRedirectError();
   if (redirectError) errorMessage.value = redirectError;
 
   try {
-    const auth = useSupabase().auth;
     // Subscribe before awaiting anything: the client exchanges the reset link's
     // ?code= while it initializes and fires PASSWORD_RECOVERY right then, so a
     // listener added after getSession() would miss it and the user would be
     // sent to the app without choosing a new password.
-    authSubscription = auth.onAuthStateChange(
-      (event: AuthChangeEvent, newSession: Session | null) => {
-        if (event === "PASSWORD_RECOVERY") setMode("recovery");
-        session.value = newSession;
-      },
-    ).data.subscription;
-    const { data } = await auth.getSession();
-    session.value = data.session;
+    authSubscription = authService.onAuthStateChange((event, newSession) => {
+      if (event === "PASSWORD_RECOVERY") setMode("recovery");
+      session.value = newSession;
+    });
+    session.value = await authService.getSession();
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err);
   }
