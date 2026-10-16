@@ -1,4 +1,9 @@
-Write tests
+---
+name: write-tests
+description: Write documented Jest tests for an existing component, composable, store or util, following CLAUDE.md §7. Use when asked to add tests, cover missing specs, or raise coverage.
+---
+
+# Write tests
 Write documented Jest tests for an existing unit, following CLAUDE.md §7. Tests describe what the unit does for its users, so they must still pass after any refactor that keeps that behaviour.
 
 1. Identify the scope

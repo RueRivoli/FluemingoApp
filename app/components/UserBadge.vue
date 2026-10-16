@@ -1,8 +1,12 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ avatarUrl?: string; fullName?: string }>(), {
-  avatarUrl: "https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png",
-  fullName: "John Doe",
-});
+const props = withDefaults(
+  defineProps<{ avatarUrl?: string; fullName?: string }>(),
+  {
+    avatarUrl:
+      "https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png",
+    fullName: "John Doe",
+  },
+);
 </script>
 
 <template>

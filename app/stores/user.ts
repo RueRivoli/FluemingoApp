@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Subscription, User } from "@supabase/supabase-js";
 
 import * as authService from "~/services/authService";
 import * as profileService from "~/services/profileService";
 import { resolveAvatarUrl } from "~/utils/avatar";
+import { DEFAULT_TARGET_LANGUAGE, toTargetLanguage } from "~/utils/languages";
 import type { Profile, ProfileUpdate } from "~~/shared/types/profile";
 
 function toMessage(err: unknown): string {
@@ -45,6 +46,11 @@ export const useUserStore = defineStore("user", () => {
   const level = computed(() => profile.value?.level ?? null);
   const nativeLanguage = computed(() => profile.value?.native_language ?? null);
   const targetLanguage = computed(() => profile.value?.target_language ?? null);
+  // Language of the content tables to query (fr_content, en_content…).
+  const contentLanguage = computed(
+    () => toTargetLanguage(targetLanguage.value) ?? DEFAULT_TARGET_LANGUAGE,
+  );
+  const isProfileSettled = computed(() => loaded.value && !isProfileLoading.value);
 
   // A failed fetch leaves profile null and sets loadError instead of throwing:
   // the app still works on the auth data alone, and the auth middleware must
@@ -109,6 +115,21 @@ export const useUserStore = defineStore("user", () => {
     });
   }
 
+  // Resolves once init() has run and the profile request (if any) is over, so
+  // queries that depend on the profile (e.g. contentLanguage) are made once,
+  // with the right value. fetchProfile flags isProfileLoading synchronously,
+  // before init sets loaded, so there is no window where both look settled.
+  function waitForProfile(): Promise<void> {
+    if (isProfileSettled.value) return Promise.resolve();
+    return new Promise((resolve) => {
+      const stop = watch(isProfileSettled, (isSettled) => {
+        if (!isSettled) return;
+        stop();
+        resolve();
+      });
+    });
+  }
+
   // The local state is cleared even if Supabase fails, so the UI never shows a
   // half-logged-out user; the error still reaches the caller.
   async function signOut() {
@@ -134,7 +155,9 @@ export const useUserStore = defineStore("user", () => {
     level,
     nativeLanguage,
     targetLanguage,
+    contentLanguage,
     init,
+    waitForProfile,
     fetchProfile,
     updateProfile,
     signOut,

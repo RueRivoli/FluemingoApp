@@ -1,0 +1,11 @@
+import { LEVELS, type Level } from "~/utils/constants";
+
+export const NEWS_CONTENT_TYPE = 1;
+/**
+ * Narrows a raw level string from the database to a CEFR level.
+ * Case-insensitive, so "b1" and "B1" both match.
+ */
+export function toLevel(value: string | null): Level | null {
+  const upper = value?.toUpperCase();
+  return LEVELS.find((level) => level === upper) ?? null;
+}

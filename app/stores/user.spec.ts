@@ -5,7 +5,9 @@
  * - init: resolves on the session alone, loads the profile in the background
  *   (isProfileLoading), runs once, survives load failures, follows auth
  *   state changes, ignores a profile that arrives for a previous user
- * - Derived fields: fullName / email / avatarUrl fallbacks, profile defaults
+ * - Derived fields: fullName / email / avatarUrl fallbacks, profile defaults,
+ *   contentLanguage with its "fr" fallback
+ * - waitForProfile: resolves at once when settled, otherwise when the profile arrives
  * - updateProfile: delegates to the service, refuses when logged out
  * - signOut: clears the state, even when Supabase fails
  */
@@ -234,6 +236,73 @@ describe("useUserStore", () => {
       expect(store.level).toBeNull();
       expect(store.nativeLanguage).toBeNull();
       expect(store.targetLanguage).toBeNull();
+    });
+  });
+
+  describe("contentLanguage", () => {
+    it("uses the profile's target language", async () => {
+      const store = await initStore({ profile: { ...PROFILE, target_language: "es" } });
+
+      expect(store.contentLanguage).toBe("es");
+    });
+
+    it("accepts any casing of the target language", async () => {
+      const store = await initStore({ profile: { ...PROFILE, target_language: "EN" } });
+
+      expect(store.contentLanguage).toBe("en");
+    });
+
+    it.each([
+      ["empty", null],
+      ["unknown", "de"],
+    ])('falls back to "fr" when the target language is %s', async (_label, targetLanguage) => {
+      const store = await initStore({ profile: { ...PROFILE, target_language: targetLanguage } });
+
+      expect(store.contentLanguage).toBe("fr");
+    });
+  });
+
+  describe("waitForProfile", () => {
+    it("resolves at once when the profile is already loaded", async () => {
+      const store = await initStore();
+
+      await expect(store.waitForProfile()).resolves.toBeUndefined();
+    });
+
+    it("waits for the profile request before resolving", async () => {
+      let resolveProfile!: (profile: Profile) => void;
+      jest.mocked(authService.getSession).mockResolvedValue(sessionOf(USER));
+      jest.mocked(profileService.getProfile).mockReturnValue(
+        new Promise((resolve) => {
+          resolveProfile = resolve;
+        }),
+      );
+      const store = useUserStore();
+      await store.init();
+      const onReady = jest.fn();
+
+      const waiting = store.waitForProfile().then(onReady);
+      await flushPromises();
+      expect(onReady).not.toHaveBeenCalled();
+
+      resolveProfile({ ...PROFILE, target_language: "en" });
+      await waiting;
+      expect(onReady).toHaveBeenCalled();
+      expect(store.contentLanguage).toBe("en");
+    });
+
+    it("waits for init when it has not run yet", async () => {
+      jest.mocked(authService.getSession).mockResolvedValue(null);
+      const store = useUserStore();
+      const onReady = jest.fn();
+
+      const waiting = store.waitForProfile().then(onReady);
+      await flushPromises();
+      expect(onReady).not.toHaveBeenCalled();
+
+      await store.init();
+      await waiting;
+      expect(onReady).toHaveBeenCalled();
     });
   });
 

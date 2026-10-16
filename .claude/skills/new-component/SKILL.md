@@ -1,4 +1,9 @@
-New component
+---
+name: new-component
+description: Create a Vue component and its co-located Jest spec following CLAUDE.md conventions (naming, folder, typed props/emits, data-testid, tests). Use when asked to build or add a new component.
+---
+
+# New component
 Create a component and its test in one go, following the conventions in CLAUDE.md.
 
 1. Clarify the component

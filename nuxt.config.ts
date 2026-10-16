@@ -8,7 +8,9 @@ export default defineNuxtConfig({
     "~/assets/css/variables.css",
     "@fortawesome/fontawesome-pro/css/fontawesome.min.css",
     "@fortawesome/fontawesome-pro/css/solid.min.css",
+    "@fortawesome/fontawesome-pro/css/regular.min.css",
     "@fortawesome/fontawesome-pro/css/light.min.css",
+    "@fortawesome/fontawesome-pro/css/thin.min.css",
     "@fortawesome/fontawesome-pro/css/duotone.min.css",
   ],
 
@@ -67,7 +69,7 @@ export default defineNuxtConfig({
         { rel: "manifest", href: "/site.webmanifest" },
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap",
         },
       ],
     },

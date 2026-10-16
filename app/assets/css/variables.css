@@ -24,7 +24,8 @@
 }
 
 :root {
-  --font-sans: 'M PLUS Rounded 1c', system-ui, -apple-system, sans-serif;
+  /* --font-sans: 'M PLUS Rounded 1c', system-ui, -apple-system, sans-serif; */
+  --font-sans: 'Nunito', system-ui, -apple-system, sans-serif;
   --page-max-width: 1200px;
   --page-max-width-narrow: 920px;
   --page-gutter: clamp(1rem, 4vw, 2rem);

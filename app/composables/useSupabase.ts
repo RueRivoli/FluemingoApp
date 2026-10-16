@@ -1,10 +1,11 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "~~/shared/types/database";
 
 // Single browser-side Supabase client. The site is statically generated, so
 // auth only ever runs in the browser — never call this during SSR/prerender.
-let client: SupabaseClient | null = null;
+let client: SupabaseClient<Database> | null = null;
 
-export function useSupabase(): SupabaseClient {
+export function useSupabase(): SupabaseClient<Database> {
   if (client) return client;
 
   const { supabaseUrl, supabaseAnonKey } = useRuntimeConfig().public;
@@ -14,7 +15,7 @@ export function useSupabase(): SupabaseClient {
     );
   }
 
-  client = createClient(supabaseUrl as string, supabaseAnonKey as string, {
+  client = createClient<Database>(supabaseUrl as string, supabaseAnonKey as string, {
     auth: {
       persistSession: true,
       autoRefreshToken: true,

@@ -41,6 +41,15 @@
 
   --color-outline: #000000;
 
+  /* Chips */
+  --color-chip-category: #6b6b6b;
+  --color-chip-theme: #e8e8e8;
+  --color-chip-theme-text: #4a4a4a;
+
+  /* Badges laid over cover images */
+  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-status-in-progress: #e67e22;
+
   /* CEFR Level Colors */
   --color-cefr-a1: #16a34a; /* green */
   --color-cefr-a2: #f59e0b; /* amber */

@@ -1,21 +1,12 @@
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  reactive,
-  ref,
-  watch,
-} from "vue";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 
-import type { Session, Subscription } from "@supabase/supabase-js";
+import type { Subscription } from "@supabase/supabase-js";
 
 import * as authService from "~/services/authService";
 import { HOME_PATH } from "../utils/constants";
 
 useHead({ title: "Authentify — Fluemingo" });
-
-// Where users land once they are authenticated.
 
 // "verify": sign-up step 2, the user types the code emailed to prove they own
 // the address. Supabase's "Confirm email" setting stays off for the mobile app,
@@ -33,7 +24,9 @@ const errorMessage = ref("");
 const infoMessage = ref("");
 const otpCode = ref("");
 const resendIn = ref(0);
-const session = ref<Session | null>(null);
+// True until we know whether a session already exists (returning from OAuth or
+// an email link, or simply already logged in): the page stays blank meanwhile.
+const isCheckingSession = ref(true);
 let authSubscription: Subscription | null = null;
 let resendTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -117,6 +110,8 @@ function handleSubmit() {
     if (mode.value === "signin") {
       await authService.signInWithPassword(form.email, form.password);
       form.password = "";
+      // Awaited so the button keeps spinning until the app is on screen.
+      await navigateTo(HOME_PATH, { replace: true });
     } else if (mode.value === "signup") {
       // The password is kept in the form and set once the email is verified.
       await sendCode();
@@ -144,16 +139,6 @@ function handleSubmit() {
   });
 }
 
-// Any successful login (password, OAuth callback, existing session) sends the
-// user to the app — except during a password reset, where they must first
-// choose a new password, and during sign-up verification, which redirects
-// itself once the password is set.
-watch(session, (current) => {
-  if (current && mode.value !== "recovery" && mode.value !== "verify") {
-    navigateTo(HOME_PATH, { replace: true });
-  }
-});
-
 // Supabase reports OAuth / email-link failures in the query string or the hash.
 function readRedirectError() {
   const params = new URLSearchParams(window.location.search);
@@ -178,14 +163,21 @@ onMounted(async () => {
     // ?code= while it initializes and fires PASSWORD_RECOVERY right then, so a
     // listener added after getSession() would miss it and the user would be
     // sent to the app without choosing a new password.
-    authSubscription = authService.onAuthStateChange((event, newSession) => {
+    authSubscription = authService.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setMode("recovery");
-      session.value = newSession;
     });
-    session.value = await authService.getSession();
+    const session = await authService.getSession();
+
+    // Back from OAuth, or already logged in: straight to the app. A password
+    // reset link also opens a session, but the user must first pick a password.
+    if (session && mode.value !== "recovery") {
+      await navigateTo(HOME_PATH, { replace: true });
+      return;
+    }
   } catch (err) {
     errorMessage.value = err instanceof Error ? err.message : String(err);
   }
+  isCheckingSession.value = false;
 });
 
 onBeforeUnmount(() => {
@@ -195,7 +187,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="auth-page">
+  <!-- Session check / redirect to the app: a blank screen, so a returning user
+       never glimpses the login page before landing in the app. -->
+  <div v-if="isCheckingSession" class="auth-pending" aria-busy="true"></div>
+
+  <div v-else class="auth-page">
     <!-- Brand panel -->
     <aside class="auth-brand">
       <NuxtLink to="/" class="brand-logo" aria-label="Fluemingo home">
@@ -231,223 +227,217 @@ onBeforeUnmount(() => {
           Back to home page
         </NuxtLink>
 
-        <!-- Logged in: the watcher above is redirecting to the app -->
-        <section
-          v-if="session && mode !== 'recovery' && mode !== 'verify'"
-          class="signed-in"
+        <div
+          v-if="mode === 'signin' || mode === 'signup'"
+          class="mode-switch"
         >
-          <ProgressSpinner style="width: 2.5rem; height: 2.5rem" />
-          <p>Logging you in…</p>
-        </section>
-
-        <template v-else>
-          <div
-            v-if="mode === 'signin' || mode === 'signup'"
-            class="mode-switch"
+          <label
+            for="mode-switch"
+            :class="{ active: !isSignUp }"
+            @click.prevent="isSignUp = false"
+            >Log In</label
           >
-            <label
-              for="mode-switch"
-              :class="{ active: !isSignUp }"
-              @click.prevent="isSignUp = false"
-              >Log In</label
+          <ToggleSwitch v-model="isSignUp" input-id="mode-switch" />
+          <label
+            for="mode-switch"
+            :class="{ active: isSignUp }"
+            @click.prevent="isSignUp = true"
+            >Sign Up</label
+          >
+        </div>
+        <h2 v-else class="mode-title">
+          {{
+            mode === "forgot"
+              ? "Reset your password"
+              : mode === "verify"
+                ? "Check your email"
+                : "Choose a new password"
+          }}
+        </h2>
+
+        <template v-if="mode === 'signin' || mode === 'signup'">
+          <div class="social-buttons">
+            <Button
+              class="social-btn"
+              fluid
+              :disabled="isLoading"
+              :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
+              :title="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
+              @click="signInWithProvider('google')"
             >
-            <ToggleSwitch v-model="isSignUp" input-id="mode-switch" />
-            <label
-              for="mode-switch"
-              :class="{ active: isSignUp }"
-              @click.prevent="isSignUp = true"
-              >Sign Up</label
-            >
-          </div>
-          <h2 v-else class="mode-title">
-            {{
-              mode === "forgot"
-                ? "Reset your password"
-                : mode === "verify"
-                  ? "Check your email"
-                  : "Choose a new password"
-            }}
-          </h2>
-
-          <template v-if="mode === 'signin' || mode === 'signup'">
-            <div class="social-buttons">
-              <Button
-                class="social-btn"
-                fluid
-                :disabled="isLoading"
-                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
-                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Google`"
-                @click="signInWithProvider('google')"
-              >
-                <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
-                  <path
-                    fill="#FFC107"
-                    d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"
-                  />
-                  <path
-                    fill="#FF3D00"
-                    d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
-                  />
-                  <path
-                    fill="#4CAF50"
-                    d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"
-                  />
-                  <path
-                    fill="#1976D2"
-                    d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"
-                  />
-                </svg>
-              </Button>
-
-              <Button
-                class="social-btn"
-                fluid
-                :disabled="isLoading"
-                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
-                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
-                @click="signInWithProvider('apple')"
-              >
-                <svg class="social-icon" viewBox="0 0 384 512" aria-hidden="true">
-                  <path
-                    fill="#fff"
-                    d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"
-                  />
-                </svg>
-              </Button>
-
-              <Button
-                class="social-btn"
-                fluid
-                :disabled="isLoading"
-                :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
-                :title="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
-                @click="signInWithProvider('facebook')"
-              >
-                <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
-                  <circle cx="24" cy="24" r="22" fill="#1877F2" />
-                  <path
-                    fill="#fff"
-                    d="M30.6 30.4l1-6.4h-6.1v-4.2c0-1.8.9-3.5 3.6-3.5h2.8v-5.5s-2.5-.4-4.9-.4c-5 0-8.3 3-8.3 8.5V24h-5.6v6.4h5.6V46c1.1.2 2.3.3 3.5.3s2.3-.1 3.4-.3V30.4h5z"
-                  />
-                </svg>
-              </Button>
-            </div>
-
-            <Divider align="center" class="or-divider">
-              <span>OR</span>
-            </Divider>
-          </template>
-
-          <form class="auth-form" @submit.prevent="handleSubmit">
-            <div v-if="mode === 'verify'" class="field verify-field">
-              <p>
-                We sent a {{ OTP_LENGTH }}-digit code to <strong>{{ form.email }}</strong>.
-                Enter it below to confirm your email.
-              </p>
-              <InputOtp
-                v-model="otpCode"
-                :length="OTP_LENGTH"
-                integer-only
-                :disabled="isLoading"
-                aria-label="Verification code"
-              />
-            </div>
-
-            <div v-if="mode !== 'recovery' && mode !== 'verify'" class="field">
-              <label for="email">Email</label>
-              <InputText
-                id="email"
-                v-model="form.email"
-                type="email"
-                autocomplete="email"
-                placeholder="you@email.com"
-                required
-                fluid
-                :disabled="isLoading"
-              />
-            </div>
-
-            <div v-if="mode !== 'forgot' && mode !== 'verify'" class="field">
-              <label for="password">
-                {{ mode === "recovery" ? "New password" : "Password" }}
-              </label>
-              <Password
-                v-model="form.password"
-                input-id="password"
-                placeholder="password"
-                :autocomplete="
-                  mode === 'signin' ? 'current-password' : 'new-password'
-                "
-                :feedback="mode !== 'signin'"
-                toggle-mask
-                required
-                fluid
-                :disabled="isLoading"
-              />
-            </div>
-
-            <button
-              v-if="mode === 'signin'"
-              type="button"
-              class="text-link"
-              @click="setMode('forgot')"
-            >
-              Forgot your password?
-            </button>
-
-            <Message v-if="errorMessage" severity="error" :closable="false">
-              {{ errorMessage }}
-            </Message>
-            <Message v-if="infoMessage" severity="success" :closable="false">
-              {{ infoMessage }}
-            </Message>
+              <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path
+                  fill="#FFC107"
+                  d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"
+                />
+                <path
+                  fill="#FF3D00"
+                  d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+                />
+                <path
+                  fill="#4CAF50"
+                  d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"
+                />
+                <path
+                  fill="#1976D2"
+                  d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"
+                />
+              </svg>
+            </Button>
 
             <Button
-              type="submit"
-              :label="submitLabel"
+              class="social-btn"
               fluid
-              size="large"
-              class="submit-btn"
-              :loading="isLoading"
-              :disabled="mode === 'verify' && otpCode.length < OTP_LENGTH"
-            />
-
-            <div v-if="mode === 'verify'" class="verify-links">
-              <button
-                type="button"
-                class="text-link"
-                :disabled="isLoading || resendIn > 0"
-                @click="resendCode"
-              >
-                {{ resendIn > 0 ? `Resend code (${resendIn}s)` : "Resend code" }}
-              </button>
-              <button type="button" class="text-link" @click="setMode('signup')">
-                Use another email
-              </button>
-            </div>
-
-            <button
-              v-if="mode === 'forgot'"
-              type="button"
-              class="text-link center"
-              @click="setMode('signin')"
+              :disabled="isLoading"
+              :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
+              :title="`${isSignUp ? 'Sign up' : 'Log in'} with Apple`"
+              @click="signInWithProvider('apple')"
             >
-              Back to log in
-            </button>
-          </form>
+              <svg class="social-icon" viewBox="0 0 384 512" aria-hidden="true">
+                <path
+                  fill="#fff"
+                  d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"
+                />
+              </svg>
+            </Button>
 
-          <p v-if="mode === 'signup'" class="legal">
-            By creating an account you agree to our
-            <NuxtLink to="/terms">Terms</NuxtLink> and
-            <NuxtLink to="/privacy-policy">Privacy Policy</NuxtLink>.
-          </p>
+            <Button
+              class="social-btn"
+              fluid
+              :disabled="isLoading"
+              :aria-label="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
+              :title="`${isSignUp ? 'Sign up' : 'Log in'} with Facebook`"
+              @click="signInWithProvider('facebook')"
+            >
+              <svg class="social-icon" viewBox="0 0 48 48" aria-hidden="true">
+                <circle cx="24" cy="24" r="22" fill="#1877F2" />
+                <path
+                  fill="#fff"
+                  d="M30.6 30.4l1-6.4h-6.1v-4.2c0-1.8.9-3.5 3.6-3.5h2.8v-5.5s-2.5-.4-4.9-.4c-5 0-8.3 3-8.3 8.5V24h-5.6v6.4h5.6V46c1.1.2 2.3.3 3.5.3s2.3-.1 3.4-.3V30.4h5z"
+                />
+              </svg>
+            </Button>
+          </div>
+
+          <Divider align="center" class="or-divider">
+            <span>OR</span>
+          </Divider>
         </template>
+
+        <form class="auth-form" @submit.prevent="handleSubmit">
+          <div v-if="mode === 'verify'" class="field verify-field">
+            <p>
+              We sent a {{ OTP_LENGTH }}-digit code to <strong>{{ form.email }}</strong>.
+              Enter it below to confirm your email.
+            </p>
+            <InputOtp
+              v-model="otpCode"
+              :length="OTP_LENGTH"
+              integer-only
+              :disabled="isLoading"
+              aria-label="Verification code"
+            />
+          </div>
+
+          <div v-if="mode !== 'recovery' && mode !== 'verify'" class="field">
+            <label for="email">Email</label>
+            <InputText
+              id="email"
+              v-model="form.email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@email.com"
+              required
+              fluid
+              :disabled="isLoading"
+            />
+          </div>
+
+          <div v-if="mode !== 'forgot' && mode !== 'verify'" class="field">
+            <label for="password">
+              {{ mode === "recovery" ? "New password" : "Password" }}
+            </label>
+            <Password
+              v-model="form.password"
+              input-id="password"
+              placeholder="password"
+              :autocomplete="
+                mode === 'signin' ? 'current-password' : 'new-password'
+              "
+              :feedback="mode !== 'signin'"
+              toggle-mask
+              required
+              fluid
+              :disabled="isLoading"
+            />
+          </div>
+
+          <button
+            v-if="mode === 'signin'"
+            type="button"
+            class="text-link"
+            @click="setMode('forgot')"
+          >
+            Forgot your password?
+          </button>
+
+          <Message v-if="errorMessage" severity="error" :closable="false">
+            {{ errorMessage }}
+          </Message>
+          <Message v-if="infoMessage" severity="success" :closable="false">
+            {{ infoMessage }}
+          </Message>
+
+          <Button
+            type="submit"
+            :label="submitLabel"
+            fluid
+            size="large"
+            class="submit-btn"
+            :loading="isLoading"
+            :disabled="mode === 'verify' && otpCode.length < OTP_LENGTH"
+          />
+
+          <div v-if="mode === 'verify'" class="verify-links">
+            <button
+              type="button"
+              class="text-link"
+              :disabled="isLoading || resendIn > 0"
+              @click="resendCode"
+            >
+              {{ resendIn > 0 ? `Resend code (${resendIn}s)` : "Resend code" }}
+            </button>
+            <button type="button" class="text-link" @click="setMode('signup')">
+              Use another email
+            </button>
+          </div>
+
+          <button
+            v-if="mode === 'forgot'"
+            type="button"
+            class="text-link center"
+            @click="setMode('signin')"
+          >
+            Back to log in
+          </button>
+        </form>
+
+        <p v-if="mode === 'signup'" class="legal">
+          By creating an account you agree to our
+          <NuxtLink to="/terms">Terms</NuxtLink> and
+          <NuxtLink to="/privacy-policy">Privacy Policy</NuxtLink>.
+        </p>
       </div>
     </main>
   </div>
 </template>
 
 <style scoped>
+.auth-pending {
+  min-height: 100vh;
+  background-color: var(--color-background);
+}
+
 .auth-page {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -601,14 +591,6 @@ onBeforeUnmount(() => {
 .mode-title {
   font-size: 1.5rem;
   font-weight: 700;
-  text-align: center;
-}
-
-.signed-in {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
   text-align: center;
 }
 

@@ -35,7 +35,7 @@ const items = [
       {
         label: "Articles",
         icon: "fa-regular fa-file-lines",
-        route: "/app/browse/news",
+        route: "/app/browse/articles",
       },
       {
         label: "Flashcards",
@@ -112,6 +112,7 @@ function isActive(path?: string) {
 .sidebar-logo {
   display: inline-flex;
   padding: 0 0.5rem;
+  text-decoration: none;
 }
 
 .sidebar-menu {
