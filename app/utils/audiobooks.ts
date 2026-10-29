@@ -50,6 +50,11 @@ export const AUDIOBOOK_CATEGORIES = {
     icon: "fa-regular fa-briefcase",
     orderId: 9,
   },
+  Criminalstories: {
+    label: "Criminal Stories",
+    icon: "fa-regular fa-user-secret",
+    orderId: 10,
+  },
 } as const satisfies Record<string, AudiobookCategoryDisplay>;
 
 export type AudiobookCategory = keyof typeof AUDIOBOOK_CATEGORIES;
