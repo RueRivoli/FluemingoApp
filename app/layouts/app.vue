@@ -1,9 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useSidebarCollapse } from "~/composables/useSidebarCollapse";
+
+const { isCollapsed } = useSidebarCollapse();
+</script>
 
 <template>
-  <div class="app-layout">
+  <div class="app-layout" :class="{ 'app-layout--collapsed': isCollapsed }">
     <aside class="app-aside">
-      <AppSidebar />
+      <AppSidebar v-model:collapsed="isCollapsed" />
     </aside>
 
     <div class="app-content">
@@ -19,6 +23,11 @@
   --sidebar-width: 240px;
   min-height: 100vh;
   background-color: var(--color-background);
+}
+
+/* Icon rail: avatar (3rem) plus the sidebar's side padding. */
+.app-layout--collapsed {
+  --sidebar-width: 72px;
 }
 
 .app-header {
@@ -41,10 +50,19 @@
     bottom: 0;
     left: 0;
     width: var(--sidebar-width);
+    transition: width 0.2s ease;
   }
 
   .app-content {
     margin-left: var(--sidebar-width);
+    transition: margin-left 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-aside,
+  .app-content {
+    transition: none;
   }
 }
 </style>

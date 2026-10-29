@@ -9,6 +9,7 @@
  *   :main-words="words"
  *   :personal-words="myWords"
  *   :saved-ids="savedIds"
+ *   :playing-id="playingWordId"
  *   @play-audio="play"
  *   @toggle-saved="(word, saved) => …"
  * />
@@ -24,12 +25,15 @@ interface Props {
   personalWords?: readonly VocabularyItem[];
   /** Ids of the words saved to the user's flashcards */
   savedIds?: readonly number[];
+  /** Id of the word whose pronunciation is playing; null when none */
+  playingId?: number | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   mainWords: () => [],
   personalWords: () => [],
   savedIds: () => [],
+  playingId: null,
 });
 
 const emit = defineEmits<{
@@ -90,6 +94,7 @@ const emptyMessage = computed(
           :type="word.type"
           :translation="word.translation"
           :has-audio="Boolean(word.audioUrl)"
+          :is-playing="word.id === playingId"
           :saved="word.status !== null"
           @play-audio="emit('playAudio', word)"
           @update:saved="(saved) => emit('toggleSaved', word, saved)"

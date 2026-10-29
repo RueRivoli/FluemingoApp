@@ -1,7 +1,13 @@
 import { useSupabase } from "~/composables/useSupabase";
 import { languageTable } from "~/services/languageTables";
 import type { Content } from "~/types/article";
-import type { AudiobookInfo, AudiobooksByCategory } from "~/types/audiobook";
+import { useUserStore } from "~/stores/user";
+import type {
+  AudiobookChapter,
+  AudiobookInfo,
+  AudiobooksByCategory,
+  Chapter,
+} from "~/types/audiobook";
 import type { ArticleCardTheme } from "~/types/theme";
 import { toLevel } from "~/utils/articles";
 import {
@@ -103,4 +109,38 @@ export async function getAudiobooks(
   const { data, error } = await query;
   if (error) throw error;
   return groupAudiobooksByCategory(data.map(toAudiobookInfo));
+}
+
+/**
+ * Reads the chapter title in the user's native language (title_en, title_de…).
+ * @returns The title, or null when the column is missing or empty
+ */
+function translatedTitle(row: Chapter, language: string | null): string | null {
+  if (!language) return null;
+  const value = (row as Record<string, unknown>)[`title_${language}`];
+  return typeof value === "string" && value !== "" ? value : null;
+}
+
+/**
+ * Loads the chapters of an audiobook, in reading order (order_id), with their
+ * title translated in the user's native language.
+ * @param audiobookId - Id of the audiobook (long_format_id of its chapters)
+ * @returns The chapters; an empty array when the audiobook has none.
+ */
+export async function getAudiobookChapters(
+  audiobookId: number,
+): Promise<AudiobookChapter[]> {
+  const { data, error } = await useSupabase()
+    .from(await languageTable("chapters"))
+    .select("*")
+    .eq("long_format_id", audiobookId)
+    .order("order_id");
+  if (error) throw error;
+  const { nativeLanguage } = useUserStore();
+  return (data as Chapter[]).map((row) => ({
+    id: row.id,
+    title: row.title ?? "",
+    translatedTitle: translatedTitle(row, nativeLanguage),
+    duration: row.duration,
+  }));
 }

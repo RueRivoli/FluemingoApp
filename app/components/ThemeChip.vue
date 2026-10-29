@@ -5,6 +5,7 @@
  *
  * @example
  * <ThemeChip label="Education" icon="fa-regular fa-graduation-cap" />
+ * <ThemeChip label="Education" light />
  */
 import Chip from "primevue/chip";
 
@@ -14,10 +15,16 @@ interface Props {
   /** Font Awesome classes of the leading icon; no icon when omitted */
   icon?: string;
   /** If theme is selected */
-  selected: boolean;
+  selected?: boolean;
+  /** Compact version (smaller padding and text), for dense cards */
+  light?: boolean;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  icon: undefined,
+  selected: false,
+  light: false,
+});
 
 // Chip has no attribute props for its inner elements: pass-through adds the
 // test hooks and hides the decorative icon from screen readers.
@@ -31,7 +38,7 @@ const PASS_THROUGH = {
 <template>
   <Chip
     class="theme-chip"
-    :class="{ selected: props.selected }"
+    :class="{ selected: props.selected, 'theme-chip--light': props.light }"
     :label="label"
     :icon="icon"
     :pt="PASS_THROUGH"
@@ -61,6 +68,20 @@ const PASS_THROUGH = {
   color: inherit;
   font-size: inherit;
   text-align: center;
+}
+
+.theme-chip--light {
+  gap: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* PrimeVue gives the icon a fixed height (chip.icon.size): with the smaller
+   glyph it would sit at the top of that box, above the text's centre. */
+.theme-chip--light :deep(.p-chip-icon) {
+  width: 12px;
+  height: auto;
 }
 
 .theme-chip :deep(.p-chip-label) {

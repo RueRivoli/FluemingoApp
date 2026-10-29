@@ -4,6 +4,7 @@
  * Covers:
  * - Rendering of the label
  * - Optional icon: classes applied when given, absent otherwise
+ * - Light (compact) version only when the light prop is set
  * - Icon hidden from assistive technologies
  */
 import { mount } from "@vue/test-utils";
@@ -12,6 +13,7 @@ import ThemeChip from "./ThemeChip.vue";
 interface FactoryProps {
   label?: string;
   icon?: string;
+  light?: boolean;
 }
 
 /** Mounts ThemeChip with a default label and no icon; override per test. */
@@ -41,6 +43,22 @@ describe("ThemeChip", () => {
       expect(wrapper.get(ICON).classes()).toEqual(
         expect.arrayContaining(["fa-regular", "fa-newspaper"]),
       );
+    });
+  });
+
+  describe("light version", () => {
+    it("is not light by default", () => {
+      const wrapper = factory();
+
+      expect(wrapper.get('[data-testid="theme-chip"]').classes()).not.toContain(
+        "theme-chip--light",
+      );
+    });
+
+    it("applies the light class when light is set", () => {
+      const wrapper = factory({ light: true });
+
+      expect(wrapper.get('[data-testid="theme-chip"]').classes()).toContain("theme-chip--light");
     });
   });
 

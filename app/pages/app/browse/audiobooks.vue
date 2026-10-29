@@ -5,6 +5,7 @@ import type { Level } from "~/utils/constants";
 import { LEVELS } from "~/utils/constants";
 import { useAsyncData } from "#imports";
 import { useUserStore } from "~/stores/user";
+import { useAudiobookDetail } from "~/composables/useAudiobookDetail";
 import * as audiobookService from "~/services/audiobookService";
 import { audiobookCategoryLabel } from "~/utils/audiobooks";
 import type { ThemeId } from "~/utils/themes";
@@ -25,6 +26,15 @@ const { data: audiobooks } = await useAsyncData(
   () =>
     audiobookService.getAudiobooks(selectedLevel.value, selectedThemes.value),
 );
+
+const {
+  selectedAudiobook,
+  isOpen: isDetailOpen,
+  chapters,
+  isLoadingChapters,
+  hasChaptersError,
+  open: openAudiobook,
+} = useAudiobookDetail();
 
 function handleSelectionChange(theme: ThemeId) {
   if (selectedThemes.value.includes(theme))
@@ -67,13 +77,28 @@ function handleSelectionChange(theme: ThemeId) {
       <AudiobookCard
         v-for="audiobook in categoryAudiobooks"
         :key="audiobook.id"
-        class="cursor-pointer"
         :title="audiobook.title"
         :author="audiobook.author"
         :image-url="audiobook.imageUrl"
         :level="audiobook.level"
         :is-new="audiobook.isNew"
+        @select="openAudiobook(audiobook)"
       />
     </div>
   </section>
+
+  <AudiobookDetailModal
+    v-if="selectedAudiobook"
+    v-model:visible="isDetailOpen"
+    :title="selectedAudiobook.title"
+    :author="selectedAudiobook.author"
+    :description="selectedAudiobook.description"
+    :image-url="selectedAudiobook.imageUrl"
+    :level="selectedAudiobook.level"
+    :is-new="selectedAudiobook.isNew"
+    :themes="selectedAudiobook.themes"
+    :chapters="chapters"
+    :is-loading-chapters="isLoadingChapters"
+    :has-chapters-error="hasChaptersError"
+  />
 </template>

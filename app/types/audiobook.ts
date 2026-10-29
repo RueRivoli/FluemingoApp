@@ -33,3 +33,17 @@ export interface AudiobookInfo {
 /** Audiobooks grouped by lowercased category: { novel: [...], biography: [...] }. */
 export type AudiobooksByCategory = Record<string, AudiobookInfo[]>;
 
+
+/** Row of a <language>_chapters table (fr_chapters, en_chapters…). */
+export type Chapter = Tables<"fr_chapters" | "en_chapters" | "es_chapters">;
+
+/** One chapter of an audiobook, in the shape the app displays. */
+export interface AudiobookChapter {
+  id: number;
+  /** Chapter title, in the learned language */
+  title: string;
+  /** Title in the user's native language; null when missing */
+  translatedTitle: string | null;
+  /** Length of the chapter's audio, in seconds; null when unknown */
+  duration: number | null;
+}

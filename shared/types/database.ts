@@ -138,6 +138,7 @@ export type Database = {
           is_corrected: boolean | null
           is_free: boolean | null
           is_new: boolean | null
+          is_original: boolean | null
           level: string | null
           published_at: string | null
           status: string
@@ -175,6 +176,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -212,6 +214,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -675,6 +678,7 @@ export type Database = {
           is_corrected: boolean | null
           is_free: boolean | null
           is_new: boolean | null
+          is_original: boolean | null
           level: string | null
           published_at: string | null
           status: string
@@ -712,6 +716,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -749,6 +754,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -1191,6 +1197,7 @@ export type Database = {
           category_1: string | null
           category_2: string | null
           category_3: string | null
+          category_4: string | null
           content: string | null
           content_multi: Json | null
           content_type: number
@@ -1209,6 +1216,7 @@ export type Database = {
           is_corrected: boolean | null
           is_free: boolean | null
           is_new: boolean | null
+          is_original: boolean | null
           level: string | null
           published_at: string | null
           status: string
@@ -1228,6 +1236,7 @@ export type Database = {
           category_1?: string | null
           category_2?: string | null
           category_3?: string | null
+          category_4?: string | null
           content?: string | null
           content_multi?: Json | null
           content_type: number
@@ -1246,6 +1255,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -1265,6 +1275,7 @@ export type Database = {
           category_1?: string | null
           category_2?: string | null
           category_3?: string | null
+          category_4?: string | null
           content?: string | null
           content_multi?: Json | null
           content_type?: number
@@ -1283,6 +1294,7 @@ export type Database = {
           is_corrected?: boolean | null
           is_free?: boolean | null
           is_new?: boolean | null
+          is_original?: boolean | null
           level?: string | null
           published_at?: string | null
           status?: string
@@ -1543,6 +1555,114 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      fr_videos: {
+        Row: {
+          accent: string | null
+          caption_type: string
+          category: string
+          channel_avatar_url: string | null
+          channel_id: string
+          channel_title: string
+          content: Json | null
+          created_at: string
+          description: string | null
+          description_de: string | null
+          description_en: string | null
+          description_es: string | null
+          description_it: string | null
+          description_ja: string | null
+          description_nl: string | null
+          description_pt: string | null
+          duration_seconds: number | null
+          has_captions: boolean
+          id: number
+          is_embeddable: boolean
+          is_featured: boolean
+          last_checked_at: string | null
+          level: string | null
+          published_at: string | null
+          region_restriction: string[] | null
+          speech_rate: string | null
+          status: string
+          theme_1: string | null
+          theme_2: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          youtube_id: string
+        }
+        Insert: {
+          accent?: string | null
+          caption_type?: string
+          category: string
+          channel_avatar_url?: string | null
+          channel_id: string
+          channel_title: string
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          description_it?: string | null
+          description_ja?: string | null
+          description_nl?: string | null
+          description_pt?: string | null
+          duration_seconds?: number | null
+          has_captions?: boolean
+          id?: never
+          is_embeddable?: boolean
+          is_featured?: boolean
+          last_checked_at?: string | null
+          level?: string | null
+          published_at?: string | null
+          region_restriction?: string[] | null
+          speech_rate?: string | null
+          status?: string
+          theme_1?: string | null
+          theme_2?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          youtube_id: string
+        }
+        Update: {
+          accent?: string | null
+          caption_type?: string
+          category?: string
+          channel_avatar_url?: string | null
+          channel_id?: string
+          channel_title?: string
+          content?: Json | null
+          created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          description_es?: string | null
+          description_it?: string | null
+          description_ja?: string | null
+          description_nl?: string | null
+          description_pt?: string | null
+          duration_seconds?: number | null
+          has_captions?: boolean
+          id?: never
+          is_embeddable?: boolean
+          is_featured?: boolean
+          last_checked_at?: string | null
+          level?: string | null
+          published_at?: string | null
+          region_restriction?: string[] | null
+          speech_rate?: string | null
+          status?: string
+          theme_1?: string | null
+          theme_2?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          youtube_id?: string
+        }
+        Relationships: []
       }
       fr_vocabulary: {
         Row: {

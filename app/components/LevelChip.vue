@@ -5,6 +5,7 @@
  *
  * @example
  * <LevelChip level="B1" label="B1" selected />
+ * <LevelChip level="B1" label="B1" selected light />
  */
 import Chip from "primevue/chip";
 import { computed } from "vue";
@@ -14,11 +15,14 @@ interface Props {
   level?: string;
   /** Fills the chip with the pastel level colour */
   selected?: boolean;
+  /** Compact version (smaller padding and text), for dense cards */
+  light?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   level: "a1",
   selected: false,
+  light: false,
 });
 
 // Full class names, never built with `bg-${...}`: Tailwind only generates
@@ -43,6 +47,8 @@ const SELECTED_CLASSES: Record<string, string> = {
 const DEFAULT_BORDER_CLASS = "border-outline/30";
 const DEFAULT_SELECTED_CLASS = "bg-primary-pastel text-primary-dark";
 const UNSELECTED_CLASS = "bg-white";
+// Same spacing and text size as the light ThemeChip / ContentCategoryChip.
+const LIGHT_CLASS = "px-[7px] py-[3px] text-xs leading-4";
 
 const levelKey = computed(() => props.level.toLowerCase());
 
@@ -60,7 +66,7 @@ const colorClass = computed(() => {
 <template>
   <Chip
     class="border rounded-md cursor-pointer"
-    :class="[borderClass, colorClass]"
+    :class="[borderClass, colorClass, { [LIGHT_CLASS]: light }]"
     data-testid="level-chip"
   />
 </template>

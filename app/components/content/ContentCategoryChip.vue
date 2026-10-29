@@ -6,6 +6,8 @@
  * @example
  * <ContentCategoryChip category="Literature" />
  * <ContentCategoryChip category="Literature" icon="fa-solid fa-book" />
+ * <ContentCategoryChip label="Slow French" icon="fa-solid fa-person-walking" />
+ * <ContentCategoryChip category="Literature" light />
  */
 import { computed } from "vue";
 import {
@@ -14,28 +16,42 @@ import {
 } from "~/utils/audiobooks";
 
 interface Props {
-  /** Category id, one of AUDIOBOOK_CATEGORY_IDS */
-  category: AudiobookCategory;
+  /** Audiobook category id, one of AUDIOBOOK_CATEGORY_IDS; gives the default label and icon */
+  category?: AudiobookCategory | null;
+  /** Text of the chip, for other kinds of content (e.g. video categories); the category's own label when omitted */
+  label?: string | null;
   /** Font Awesome classes of the leading icon; the category's own icon when omitted */
   icon?: string | null;
+  /** Compact version (smaller padding and text), for dense cards */
+  light?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  category: null,
+  label: null,
   icon: null,
+  light: false,
 });
 
-const label = computed(() => AUDIOBOOK_CATEGORIES[props.category].label);
-const iconClasses = computed(() => props.icon ?? AUDIOBOOK_CATEGORIES[props.category].icon);
+const category = computed(() =>
+  props.category ? AUDIOBOOK_CATEGORIES[props.category] : null,
+);
+const displayLabel = computed(() => props.label ?? category.value?.label ?? "");
+const iconClasses = computed(() => props.icon ?? category.value?.icon ?? null);
 </script>
 
 <template>
-  <span class="content-category-chip" data-testid="content-category-chip">
+  <span
+    :class="['content-category-chip', { 'content-category-chip--light': light }]"
+    data-testid="content-category-chip"
+  >
     <span
+      v-if="iconClasses"
       :class="['content-category-chip__icon', iconClasses]"
       aria-hidden="true"
       data-testid="content-category-chip-icon"
     />
-    <span data-testid="content-category-chip-label">{{ label }}</span>
+    <span data-testid="content-category-chip-label">{{ displayLabel }}</span>
   </span>
 </template>
 
@@ -57,5 +73,16 @@ const iconClasses = computed(() => props.icon ?? AUDIOBOOK_CATEGORIES[props.cate
 .content-category-chip__icon {
   width: 16px;
   text-align: center;
+}
+
+.content-category-chip--light {
+  gap: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.content-category-chip--light .content-category-chip__icon {
+  width: 12px;
 }
 </style>

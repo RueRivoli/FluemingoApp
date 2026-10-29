@@ -8,6 +8,8 @@
  * - getPersonalArticleVocabulary: queries the flashcards table, keeps the words
  *   added by the user on the article, oldest first, maps rows, throws on error
  * - getArticleVocabulary: returns both lists, throws if one query fails
+ * - getVideoVocabulary: same query filtered on the video (content_type 3),
+ *   maps rows, throws on error
  */
 import { useSupabase } from "~/composables/useSupabase";
 import { languageTable } from "~/services/languageTables";
@@ -19,6 +21,7 @@ import {
   getArticleVocabulary,
   getMainArticleVocabulary,
   getPersonalArticleVocabulary,
+  getVideoVocabulary,
 } from "./vocabularyService";
 
 jest.mock("~/composables/useSupabase");
@@ -171,6 +174,35 @@ describe("vocabularyService", () => {
       mockQuery({ fr_vocabulary: { data: null, error: DB_ERROR } });
 
       await expect(getMainArticleVocabulary(ARTICLE_ID)).rejects.toBe(DB_ERROR);
+    });
+  });
+
+  describe("getVideoVocabulary", () => {
+    const VIDEO_ID = 42;
+
+    it("queries the video's vocabulary with the user's flashcards embedded", async () => {
+      const { builders } = mockQuery({});
+
+      await getVideoVocabulary(VIDEO_ID);
+
+      const builder = builders.fr_vocabulary!;
+      expect(builder.select).toHaveBeenCalledWith("*, flashcards:fr_flashcards ( id, status )");
+      expect(builder.eq).toHaveBeenCalledWith("reference_id", VIDEO_ID);
+      expect(builder.eq).toHaveBeenCalledWith("content_type", 3);
+    });
+
+    it("maps the words, translated in the native language", async () => {
+      mockQuery({ fr_vocabulary: { data: [vocabularyRow()], error: null } });
+
+      const [word] = await getVideoVocabulary(VIDEO_ID);
+
+      expect(word).toMatchObject({ id: 1191, text: "utiliser", translation: "to use" });
+    });
+
+    it("throws the Supabase error", async () => {
+      mockQuery({ fr_vocabulary: { data: null, error: DB_ERROR } });
+
+      await expect(getVideoVocabulary(VIDEO_ID)).rejects.toBe(DB_ERROR);
     });
   });
 

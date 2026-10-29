@@ -6,6 +6,7 @@
  * - Optional parts shown only when given: author, cover image, level, NEW badge
  * - v-model:favorite forwarded from the FavoriteToggleButton
  * - Locked content: lock shown, "lockedClick" re-emitted
+ * - Selection: "select" on cover click / Enter / Space, not from the heart
  */
 import { mount } from "@vue/test-utils";
 import AudiobookCard from "./AudiobookCard.vue";
@@ -109,6 +110,50 @@ describe("AudiobookCard", () => {
       await wrapper.get(sel("favorite-toggle-button")).trigger("click");
 
       expect(wrapper.emitted("lockedClick")).toHaveLength(1);
+    });
+  });
+
+  describe("selection", () => {
+    it("is a keyboard-reachable button named after the title", () => {
+      const wrapper = factory();
+
+      const cover = wrapper.get(sel("audiobook-card-cover"));
+      expect(cover.attributes("role")).toBe("button");
+      expect(cover.attributes("tabindex")).toBe("0");
+      expect(cover.attributes("aria-label")).toBe("Open La Belle et la Bête");
+    });
+
+    it('emits "select" when the cover is clicked', async () => {
+      const wrapper = factory();
+
+      await wrapper.get(sel("audiobook-card-cover")).trigger("click");
+
+      expect(wrapper.emitted("select")).toHaveLength(1);
+    });
+
+    it.each(["enter", "space"])('emits "select" on %s', async (key) => {
+      const wrapper = factory();
+
+      await wrapper.get(sel("audiobook-card-cover")).trigger(`keydown.${key}`);
+
+      expect(wrapper.emitted("select")).toHaveLength(1);
+    });
+
+    it('does not emit "select" when the heart is clicked', async () => {
+      const wrapper = factory();
+
+      await wrapper.get(sel("favorite-toggle-button")).trigger("click");
+
+      expect(wrapper.emitted("select")).toBeUndefined();
+      expect(wrapper.emitted("update:favorite")).toEqual([[true]]);
+    });
+
+    it('does not emit "select" on Enter from the heart', async () => {
+      const wrapper = factory();
+
+      await wrapper.get(sel("favorite-toggle-button")).trigger("keydown.enter");
+
+      expect(wrapper.emitted("select")).toBeUndefined();
     });
   });
 });

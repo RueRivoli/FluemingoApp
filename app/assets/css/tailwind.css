@@ -14,7 +14,7 @@
   --color-primary-dark: #5a67d8;
   --color-secondary: #f6d75a;
   --color-secondary-dark: #6b4399;
-  --color-neutral: #1a1a1a;
+  --color-neutral: #111111;
 
   /* Texte */
   --color-text-primary: #1a1a1a;
@@ -45,6 +45,13 @@
   --color-chip-category: #6b6b6b;
   --color-chip-theme: #e8e8e8;
   --color-chip-theme-text: #4a4a4a;
+
+  /* Word pop-up of the video subtitles (Figma WordDefinitionPopover) */
+  --color-word-surface: #f2f1ec;
+  --color-word-border: #e9e7e0;
+  --color-word-text: #55555b;
+  --color-word-text-faint: #8c8c92;
+  --color-word-accent: #e8ecff;
 
   /* Badges laid over cover images */
   --color-overlay: rgba(0, 0, 0, 0.6);

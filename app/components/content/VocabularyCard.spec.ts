@@ -3,7 +3,8 @@
  *
  * Covers:
  * - Rendering of the word, optional grammar tag and translation
- * - Audio button: shown only with hasAudio, emits "playAudio", labelled, icon hidden
+ * - Audio button: shown only with hasAudio, emits "playAudio", labelled, icon hidden,
+ *   coloured with a solid icon while isPlaying
  * - Save bookmark: toggles v-model:saved, icon (bookmark-plus / filled bookmark) and aria state follow it
  */
 import { mount } from "@vue/test-utils";
@@ -64,6 +65,24 @@ describe("VocabularyCard", () => {
 
       expect(icon.classes()).toContain("fa-circle-waveform-lines");
       expect(icon.attributes("aria-hidden")).toBe("true");
+    });
+
+    it("shows a light, uncoloured icon when not playing", () => {
+      const wrapper = factory({ hasAudio: true });
+
+      expect(wrapper.get(sel("vocabulary-card-audio-icon")).classes()).toContain("fa-light");
+      expect(wrapper.get(sel("vocabulary-card-audio")).classes()).not.toContain(
+        "vocabulary-card__audio--playing",
+      );
+    });
+
+    it("colours the icon and makes it solid while playing", () => {
+      const wrapper = factory({ hasAudio: true, isPlaying: true });
+
+      expect(wrapper.get(sel("vocabulary-card-audio-icon")).classes()).toContain("fa-solid");
+      expect(wrapper.get(sel("vocabulary-card-audio")).classes()).toContain(
+        "vocabulary-card__audio--playing",
+      );
     });
   });
 

@@ -2,6 +2,7 @@ import { useSupabase } from "~/composables/useSupabase";
 import { languageTable } from "~/services/languageTables";
 import { useUserStore } from "~/stores/user";
 import { NEWS_CONTENT_TYPE } from "~/utils/articles";
+import { VIDEOS_CONTENT_TYPE } from "~/utils/videos";
 import type {
   Flashcard,
   Vocabulary,
@@ -76,26 +77,49 @@ function flashcardToVocabularyItem(row: Flashcard): VocabularyItem {
 }
 
 /**
- * Loads the vocabulary chosen for an article, translated in the user's native
- * language, with the user's flashcard status on each word.
- * @returns The words; an empty array when the article has none.
+ * Loads the vocabulary chosen for a piece of content, translated in the
+ * user's native language, with the user's flashcard status on each word.
+ * @param referenceId - Id of the content in its own table
+ * @param contentType - Kind of content (NEWS_CONTENT_TYPE, VIDEOS_CONTENT_TYPE…)
+ * @returns The words; an empty array when the content has none.
  */
-export async function getMainArticleVocabulary(
-  articleId: number,
+async function getContentVocabulary(
+  referenceId: number,
+  contentType: number,
 ): Promise<VocabularyItem[]> {
   const vocabularyTable = await languageTable(VOCABULARY_TABLE);
   const flashcardsTable = await languageTable(FLASHCARDS_TABLE);
   const { data, error } = await useSupabase()
     .from(vocabularyTable)
     .select(`*, flashcards:${flashcardsTable} ( id, status )`)
-    .eq("reference_id", articleId)
-    .eq("content_type", NEWS_CONTENT_TYPE)
+    .eq("reference_id", referenceId)
+    .eq("content_type", contentType)
     .order("id");
   if (error) throw error;
   const { nativeLanguage } = useUserStore();
   return (data as unknown as VocabularyWithFlashcards[]).map((row) =>
     vocabularyToVocabularyItem(row, nativeLanguage),
   );
+}
+
+/**
+ * Loads the vocabulary chosen for an article, translated in the user's native
+ * language, with the user's flashcard status on each word.
+ * @returns The words; an empty array when the article has none.
+ */
+export function getMainArticleVocabulary(
+  articleId: number,
+): Promise<VocabularyItem[]> {
+  return getContentVocabulary(articleId, NEWS_CONTENT_TYPE);
+}
+
+/**
+ * Loads the vocabulary chosen for a video (content_type 3), translated in the
+ * user's native language, with the user's flashcard status on each word.
+ * @returns The words; an empty array when the video has none.
+ */
+export function getVideoVocabulary(videoId: number): Promise<VocabularyItem[]> {
+  return getContentVocabulary(videoId, VIDEOS_CONTENT_TYPE);
 }
 
 /**

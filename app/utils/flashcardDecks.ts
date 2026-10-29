@@ -1,0 +1,61 @@
+/** Learning stages a flashcard can be in, as stored in <language>_flashcards.status. */
+export const FLASHCARD_STATUSES = ["saved", "difficult", "training", "mastered"] as const;
+
+export type FlashcardStatus = (typeof FLASHCARD_STATUSES)[number];
+
+/** Number of the user's flashcards in each status. */
+export type FlashcardCounts = Record<FlashcardStatus, number>;
+
+/** How a flashcard deck is presented on the Flashcards page. */
+export interface FlashcardDeck {
+  status: FlashcardStatus;
+  /** Deck name, e.g. "Oops" */
+  title: string;
+  /** One-line explanation below the name */
+  subtitle: string;
+  /** Font Awesome classes of the icon before the name */
+  icon: string;
+  /** Illustration shown on the colored panel (served from public/) */
+  imageUrl: string;
+}
+
+/** The four decks, in the order the mobile app shows them. */
+export const FLASHCARD_DECKS: readonly FlashcardDeck[] = [
+  {
+    status: "saved",
+    title: "Saved",
+    subtitle: "Saved vocabulary",
+    icon: "fa-regular fa-bookmark",
+    imageUrl: "/img/flashcards/saved.png",
+  },
+  {
+    status: "difficult",
+    title: "Oops",
+    subtitle: "Difficult vocabulary",
+    icon: "fa-regular fa-triangle-exclamation",
+    imageUrl: "/img/flashcards/difficult.png",
+  },
+  {
+    status: "training",
+    title: "Practice",
+    subtitle: "Training vocabulary",
+    icon: "fa-regular fa-dumbbell",
+    imageUrl: "/img/flashcards/training.png",
+  },
+  {
+    status: "mastered",
+    title: "Mastered",
+    subtitle: "Acquired vocabulary",
+    icon: "fa-regular fa-badge-check",
+    imageUrl: "/img/flashcards/mastered.png",
+  },
+] as const;
+
+/**
+ * Label of an expression count: "1 Expression", "0 Expressions", "22 Expressions".
+ * @param count - Number of expressions
+ * @returns "Expression" for exactly one, "Expressions" otherwise
+ */
+export function expressionsLabel(count: number): string {
+  return count === 1 ? "Expression" : "Expressions";
+}

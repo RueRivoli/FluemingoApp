@@ -6,6 +6,7 @@
  * - Switching to the Personal tab shows the user's words
  * - Empty message per tab
  * - Saved state of each card from savedIds
+ * - Playing state of the card matching playingId
  * - "playAudio" and "toggleSaved" re-emitted with the word
  */
 import { mount } from "@vue/test-utils";
@@ -60,6 +61,22 @@ describe("VocabularyList", () => {
       const wrapper = factory();
 
       expect(wrapper.findAll(sel("vocabulary-card-audio"))).toHaveLength(1);
+    });
+
+    it("marks the card of playingId as playing", () => {
+      const wrapper = factory({ playingId: 1 });
+
+      expect(wrapper.get(sel("vocabulary-card-audio")).classes()).toContain(
+        "vocabulary-card__audio--playing",
+      );
+    });
+
+    it("marks no card as playing by default", () => {
+      const wrapper = factory();
+
+      expect(wrapper.get(sel("vocabulary-card-audio")).classes()).not.toContain(
+        "vocabulary-card__audio--playing",
+      );
     });
 
     it("marks the words of savedIds as saved", () => {

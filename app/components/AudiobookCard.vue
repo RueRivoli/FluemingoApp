@@ -4,6 +4,7 @@
  * level chip and optional NEW badge, then the author (1 line) and the title
  * (up to 2 lines), both cut with an ellipsis when longer.
  * Matches the AudiobookCard component of the Figma mockup.
+ * Clicking the cover (or Enter / Space on it) emits "select"; the heart does not.
  *
  * @example
  * <AudiobookCard
@@ -46,6 +47,8 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   /** Fired when the lock is clicked on gated content */
   lockedClick: [];
+  /** Fired when the cover is clicked or activated with the keyboard */
+  select: [];
 }>();
 
 /** Whether the audiobook is in the user's favorites */
@@ -54,7 +57,18 @@ const isFavorite = defineModel<boolean>("favorite", { default: false });
 
 <template>
   <article class="audiobook-card" data-testid="audiobook-card">
-    <div class="audiobook-card__cover">
+    <!-- Not a <button>: it already holds the heart button. .self keeps the
+         heart's own Enter/Space from opening the audiobook. -->
+    <div
+      class="audiobook-card__cover"
+      role="button"
+      tabindex="0"
+      :aria-label="`Open ${title}`"
+      data-testid="audiobook-card-cover"
+      @click="emit('select')"
+      @keydown.enter.self.prevent="emit('select')"
+      @keydown.space.self.prevent="emit('select')"
+    >
       <NuxtImg
         v-if="imageUrl"
         :src="imageUrl"
@@ -67,6 +81,7 @@ const isFavorite = defineModel<boolean>("favorite", { default: false });
         v-model="isFavorite"
         :locked="locked"
         class="audiobook-card__favorite"
+        @click.stop
         @locked-click="emit('lockedClick')"
       />
       <!-- selected: the pastel fill is opaque, so the cover art does not show through. -->
@@ -104,6 +119,12 @@ const isFavorite = defineModel<boolean>("favorite", { default: false });
   overflow: hidden;
   border-radius: 12px;
   background-color: var(--color-chip-theme);
+  cursor: pointer;
+}
+
+.audiobook-card__cover:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .audiobook-card__image {

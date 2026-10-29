@@ -5,6 +5,7 @@
  * - Border in the level colour for every CEFR level, whatever the casing
  * - Neutral border for "All" and unknown levels
  * - Pastel fill when selected, white otherwise
+ * - Light (compact) version: smaller padding and text only when set
  * - Label forwarded to the PrimeVue Chip
  */
 import { mount } from "@vue/test-utils";
@@ -14,6 +15,7 @@ interface FactoryProps {
   level?: string;
   selected?: boolean;
   label?: string;
+  light?: boolean;
 }
 
 /** Mounts LevelChip for B1, unselected; override per test. */
@@ -73,6 +75,22 @@ describe("LevelChip", () => {
       const wrapper = factory({ level: "All", selected: true });
 
       expect(wrapper.get(CHIP).classes()).toContain("bg-primary-pastel");
+    });
+  });
+
+  describe("light version", () => {
+    it("keeps the default size when light is not set", () => {
+      const wrapper = factory();
+
+      expect(wrapper.get(CHIP).classes()).not.toContain("text-xs");
+    });
+
+    it("uses smaller padding and text when light is set", () => {
+      const wrapper = factory({ light: true });
+
+      expect(wrapper.get(CHIP).classes()).toEqual(
+        expect.arrayContaining(["px-[7px]", "py-[3px]", "text-xs"]),
+      );
     });
   });
 

@@ -11,6 +11,7 @@
  *   type="v"
  *   translation="to be injured"
  *   has-audio
+ *   :is-playing="isPlaying"
  *   @play-audio="play"
  * />
  */
@@ -26,12 +27,15 @@ interface Props {
   translation?: string | null;
   /** Shows the pronunciation button */
   hasAudio?: boolean;
+  /** The pronunciation is playing: the audio icon is coloured */
+  isPlaying?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: null,
   translation: null,
   hasAudio: false,
+  isPlaying: false,
 });
 
 const emit = defineEmits<{
@@ -49,6 +53,12 @@ const AUDIO_PASS_THROUGH = {
 } as const;
 
 const audioLabel = computed(() => `Listen to "${props.word}"`);
+
+const audioIcon = computed(() =>
+  props.isPlaying
+    ? "fa-solid fa-circle-waveform-lines"
+    : "fa-light fa-circle-waveform-lines",
+);
 
 const saveLabel = computed(() =>
   isSaved.value
@@ -75,8 +85,11 @@ const saveLabel = computed(() =>
         </span>
         <Button
           v-if="hasAudio"
-          class="vocabulary-card__audio"
-          icon="fa-light fa-circle-waveform-lines"
+          :class="[
+            'vocabulary-card__audio',
+            { 'vocabulary-card__audio--playing': isPlaying },
+          ]"
+          :icon="audioIcon"
           text
           rounded
           :aria-label="audioLabel"
@@ -118,7 +131,7 @@ const saveLabel = computed(() =>
   padding: 10px 12px 10px 12px;
   border: 1px solid #a1a1a1;
   border-radius: 12px;
-  background-color: var(--color-chip-theme);
+  background-color: var(--color-bg);
 }
 
 .vocabulary-card__text {
@@ -172,6 +185,10 @@ const saveLabel = computed(() =>
 
 .vocabulary-card__audio :deep(.p-button-icon) {
   font-size: inherit;
+}
+
+.vocabulary-card__audio--playing {
+  color: var(--color-primary-dark);
 }
 
 .vocabulary-card__save {
