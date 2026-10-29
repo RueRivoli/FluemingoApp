@@ -110,7 +110,8 @@ useHead(() => ({ title: `${title.value} — Fluemingo` }));
   <VideoTabs v-else-if="video" v-model:tab="activeTab" class="mt-6">
     <template #video>
       <!-- Figma "Video page": player column capped at 680px, subtitles panel
-           taking the rest, as tall as the player column (it scrolls inside). -->
+           taking the rest, as tall as the player column but at least 600px (it
+           scrolls inside). -->
       <section class="flex flex-col gap-6 lg:flex-row lg:items-stretch">
         <div class="flex w-full flex-col gap-4 lg:max-w-170 lg:flex-[0_1_680px]">
           <VideoPlayer
@@ -127,7 +128,7 @@ useHead(() => ({ title: `${title.value} — Fluemingo` }));
           </p>
         </div>
 
-        <div class="relative h-105 lg:h-auto lg:min-w-[320px] lg:flex-1">
+        <div class="relative h-130 lg:h-auto lg:min-h-150 lg:min-w-[320px] lg:flex-1">
           <VideoSubtitlesPanel
             class="absolute inset-0"
             :cues="video.subtitles"

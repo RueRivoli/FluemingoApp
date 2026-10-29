@@ -34,6 +34,8 @@ const ICONS = {
   slow: "/img/icons/word-popover/snail.svg",
   listen: "/img/icons/word-popover/volume.svg",
 } as const;
+// Curved arrow from the word down to its base form.
+const BASIS_ICON = "fa-regular fa-arrow-turn-down-right";
 
 /** Shown under the word only when it differs: "les amis" → "ami". */
 const baseForm = computed(() => {
@@ -61,6 +63,11 @@ const chips = computed(() =>
           class="video-word-definition__basis"
           data-testid="video-word-definition-basis"
         >
+          <span
+            :class="['video-word-definition__basis-icon', BASIS_ICON]"
+            aria-hidden="true"
+            data-testid="video-word-definition-basis-icon"
+          />
           {{ baseForm }}
         </p>
       </div>
@@ -149,11 +156,18 @@ const chips = computed(() =>
 }
 
 .video-word-definition__basis {
+  display: flex;
+  gap: 6px;
+  align-items: center;
   margin: 2px 0 0;
   color: var(--color-word-text-faint);
   font-family: Literata, Georgia, serif;
   font-size: 14px;
   line-height: 20px;
+}
+
+.video-word-definition__basis-icon {
+  font-size: 12px;
 }
 
 .video-word-definition__listen {

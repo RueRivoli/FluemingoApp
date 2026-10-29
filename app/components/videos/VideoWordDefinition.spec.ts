@@ -3,7 +3,8 @@
  *
  * Covers:
  * - Rendering: word, translation, note; note / translation hidden when missing
- * - Base form shown only when it differs from the word (case-insensitive)
+ * - Base form shown only when it differs from the word (case-insensitive),
+ *   after a decorative curved arrow
  * - Chips: spelled-out grammar tag, "proper noun"; none without either
  * - Pronunciation buttons: hidden unless canListen; emit "listen" with slow
  *   true / false; accessible names
@@ -61,6 +62,13 @@ describe("VideoWordDefinition", () => {
   describe("base form", () => {
     it("shows the base form when it differs from the word", () => {
       expect(factory().get(sel("video-word-definition-basis")).text()).toBe("ami");
+    });
+
+    it("puts a decorative curved arrow before the base form", () => {
+      const icon = factory().get(sel("video-word-definition-basis-icon"));
+
+      expect(icon.classes()).toContain("fa-arrow-turn-down-right");
+      expect(icon.attributes("aria-hidden")).toBe("true");
     });
 
     it.each([
