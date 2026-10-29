@@ -4,6 +4,8 @@
  * Covers:
  * - getNewsArticles: queries news rows of the user's language table (via
  *   languageTable), optional level filter ("All"/null = none), throws on error
+ * - Pagination: newest first with a stable tie-break, the requested page's
+ *   range, the exact total count (0 when missing)
  * - Row → NewsArticleInfo mapping: renamed columns, null title fallback, level
  *   normalisation, themes built from category_1..3 without null/undefined,
  *   resolved against THEMES, img_url storage paths turned into public URLs
@@ -12,6 +14,7 @@ import { useSupabase } from "~/composables/useSupabase";
 
 import { languageTable } from "~/services/languageTables";
 import type { Content } from "~/types/article";
+import { ARTICLES_PAGE_SIZE } from "~/utils/articles";
 
 import { getNewsArticles } from "./articleService";
 
@@ -26,6 +29,7 @@ const DB_ERROR = new Error("permission denied for table fr_content");
 interface QueryResult {
   data: unknown;
   error: unknown;
+  count?: number | null;
 }
 
 const STORAGE_BASE = "https://project.supabase.co/storage/v1/object/public";
@@ -39,6 +43,9 @@ function mockQuery(result: QueryResult) {
   const builder = {
     select: jest.fn(() => builder),
     eq: jest.fn(() => builder),
+    or: jest.fn(() => builder),
+    order: jest.fn(() => builder),
+    range: jest.fn(() => builder),
     then: (resolve: (value: QueryResult) => unknown) =>
       Promise.resolve(result).then(resolve),
   };
@@ -86,7 +93,9 @@ function row(overrides: Partial<Article> = {}): Article {
 /** Loads a single row through getNewsArticles and returns the mapped article. */
 async function mapRow(overrides: Partial<Article> = {}) {
   mockQuery({ data: [row(overrides)], error: null });
-  const [article] = await getNewsArticles();
+  const {
+    articles: [article],
+  } = await getNewsArticles();
   return article;
 }
 
@@ -132,13 +141,62 @@ describe("articleService", () => {
     it("returns an empty list when there are no articles", async () => {
       mockQuery({ data: [], error: null });
 
-      await expect(getNewsArticles()).resolves.toEqual([]);
+      await expect(getNewsArticles()).resolves.toEqual({
+        articles: [],
+        total: 0,
+      });
     });
 
     it("throws the Supabase error", async () => {
       mockQuery({ data: null, error: DB_ERROR });
 
       await expect(getNewsArticles()).rejects.toBe(DB_ERROR);
+    });
+  });
+
+  describe("pagination", () => {
+    it("asks for the exact total count", async () => {
+      const { builder } = mockQuery({ data: [], error: null });
+
+      await getNewsArticles();
+
+      expect(builder.select).toHaveBeenCalledWith("*", { count: "exact" });
+    });
+
+    it("sorts the newest articles first, then by id so pages never overlap", async () => {
+      const { builder } = mockQuery({ data: [], error: null });
+
+      await getNewsArticles();
+
+      expect(builder.order.mock.calls).toEqual([
+        ["published_at", { ascending: false, nullsFirst: false }],
+        ["id", { ascending: false }],
+      ]);
+    });
+
+    it("loads the first page of ARTICLES_PAGE_SIZE articles by default", async () => {
+      const { builder } = mockQuery({ data: [], error: null });
+
+      await getNewsArticles();
+
+      expect(builder.range).toHaveBeenCalledWith(0, ARTICLES_PAGE_SIZE - 1);
+    });
+
+    it("loads the range of the requested page", async () => {
+      const { builder } = mockQuery({ data: [], error: null });
+
+      await getNewsArticles("All", [], 3, 10);
+
+      expect(builder.range).toHaveBeenCalledWith(20, 29);
+    });
+
+    it("returns the total count across all pages", async () => {
+      mockQuery({ data: [row()], error: null, count: 57 });
+
+      const { articles, total } = await getNewsArticles();
+
+      expect(articles).toHaveLength(1);
+      expect(total).toBe(57);
     });
   });
 

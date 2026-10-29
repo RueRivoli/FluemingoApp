@@ -3,7 +3,11 @@ import { languageTable } from "~/services/languageTables";
 import type { ArticleCardTheme } from "~/types/article";
 import type { Level } from "~/utils/constants";
 import { LEVELS } from "~/utils/constants";
-import { toLevel, NEWS_CONTENT_TYPE } from "~/utils/articles";
+import {
+  ARTICLES_PAGE_SIZE,
+  NEWS_CONTENT_TYPE,
+  toLevel,
+} from "~/utils/articles";
 import { toThemeChip, type ThemeId } from "~/utils/themes";
 
 import type { Content, NewsArticleInfo } from "~/types/article";
@@ -65,24 +69,42 @@ function themesFilter(themes: readonly ThemeId[]): string {
     ])
     .join(",");
 }
+/** One page of news articles, with the number of articles across all pages. */
+export interface NewsArticlesPage {
+  articles: NewsArticleInfo[];
+  total: number;
+}
+
 /**
- * Loads the news articles, optionally of a single CEFR level.
- * @param level - Only return articles of this level; every level when null
- * @returns The news articles, empty when there are none.
+ * Loads one page of news articles, newest first, optionally of a single CEFR
+ * level and of some themes.
+ * @param level - Only return articles of this level; every level for "All"
+ * @param themes - Only return articles of one of these themes; all when empty
+ * @param page - Page to load, 1-based
+ * @param pageSize - Articles per page
+ * @returns The page's articles (empty past the last page) and the total count
  */
 export async function getNewsArticles(
   level: Level = LEVELS[0],
   themes: readonly ThemeId[] = [],
-): Promise<NewsArticleInfo[]> {
+  page = 1,
+  pageSize = ARTICLES_PAGE_SIZE,
+): Promise<NewsArticlesPage> {
+  const from = (page - 1) * pageSize;
   let query = useSupabase()
     .from(await languageTable("content"))
-    .select("*")
+    .select("*", { count: "exact" })
     .eq("content_type", NEWS_CONTENT_TYPE);
   // No filter "All" (LEVELS[0]).
   if (level !== LEVELS[0]) query = query.eq("level", level);
   if (themes.length > 0) query = query.or(themesFilter(themes));
 
-  const { data, error } = await query;
+  // id breaks ties between articles published at the same time, so no article
+  // shows up on two pages or on none.
+  const { data, count, error } = await query
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .order("id", { ascending: false })
+    .range(from, from + pageSize - 1);
   if (error) throw error;
-  return data.map(toNewsArticleInfo);
+  return { articles: data.map(toNewsArticleInfo), total: count ?? 0 };
 }

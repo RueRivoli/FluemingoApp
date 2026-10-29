@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import Paginator, { type PageState } from "primevue/paginator";
+import { computed, ref, watch } from "vue";
 
 import type { Level } from "~/utils/constants";
 import { LEVELS } from "~/utils/constants";
 import { useAsyncData } from "#imports";
 import { useUserStore } from "~/stores/user";
 import * as articleService from "~/services/articleService";
+import { ARTICLES_PAGE_SIZE } from "~/utils/articles";
 import type { ThemeId } from "~/utils/themes";
 import * as vocabularyService from "~/services/vocabularyService";
 import type { NewsArticleInfo } from "~/types/article";
@@ -17,15 +19,39 @@ useHead({ title: "Articles — Fluemingo" });
 // null = every level.
 const selectedLevel = ref<Level | null>(LEVELS[0]);
 const selectedThemes = ref<ThemeId[]>([]);
+// 1-based, as articleService expects.
+const currentPage = ref(1);
 // The service picks the table from the user's language by itself; the page only
 // needs it in the key, so the list reloads when the level or the language changes.
 const { contentLanguage } = storeToRefs(useUserStore());
 
 const { data } = await useAsyncData(
   () =>
-    `newsArticles-${contentLanguage.value}-${selectedLevel.value}-${selectedThemes.value.join(",")}`,
+    `newsArticles-${contentLanguage.value}-${selectedLevel.value}-${selectedThemes.value.join(",")}-${currentPage.value}`,
   () =>
-    articleService.getNewsArticles(selectedLevel.value, selectedThemes.value),
+    articleService.getNewsArticles(
+      selectedLevel.value,
+      selectedThemes.value,
+      currentPage.value,
+    ),
+);
+
+const articles = computed(() => data.value?.articles ?? []);
+const totalArticles = computed(() => data.value?.total ?? 0);
+// Paginator works with the index of the first row, not a page number.
+const firstArticleIndex = computed(
+  () => (currentPage.value - 1) * ARTICLES_PAGE_SIZE,
+);
+
+// Other filters give other results: the current page may not exist any more.
+// Sync flush: the page is reset before the data key is recomputed, so the
+// old page of the new filters is never fetched.
+watch(
+  [selectedLevel, selectedThemes, contentLanguage],
+  () => {
+    currentPage.value = 1;
+  },
+  { deep: true, flush: "sync" },
 );
 
 // Article shown in the detail modal; kept after closing so the content does
@@ -41,6 +67,11 @@ async function openArticle(article: NewsArticleInfo) {
   const vocabulary = await vocabularyService.getArticleVocabulary(article.id);
   mainVocabulary.value = vocabulary.mainVocabulary;
   personalVocabulary.value = vocabulary.personalVocabulary;
+}
+
+function handlePageChange(state: PageState) {
+  currentPage.value = state.page + 1;
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function handleSelectionChange(theme: ThemeId) {
@@ -71,7 +102,7 @@ function handleSelectionChange(theme: ThemeId) {
     <!-- Props listed explicitly: the article's other fields (author, translations…) are not card props. -->
     <ArticleCard
       class="cursor-pointer"
-      v-for="article in data"
+      v-for="article in articles"
       :key="article.id"
       :title="article.title"
       :description="article.description"
@@ -82,6 +113,15 @@ function handleSelectionChange(theme: ThemeId) {
       @click="openArticle(article)"
     />
   </div>
+
+  <Paginator
+    v-if="totalArticles > ARTICLES_PAGE_SIZE"
+    class="mt-6"
+    :first="firstArticleIndex"
+    :rows="ARTICLES_PAGE_SIZE"
+    :total-records="totalArticles"
+    @page="handlePageChange"
+  />
 
   <ArticleDetailModal
     v-if="selectedArticle"
