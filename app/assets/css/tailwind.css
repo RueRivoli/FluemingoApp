@@ -53,6 +53,11 @@
   --color-word-text-faint: #8c8c92;
   --color-word-accent: #e8ecff;
 
+  /* Flashcard status badges (Figma VocabularyItemCard) */
+  --color-secondary-pastel: #fdf2c6;
+  --color-danger: #e8395b;
+  --color-danger-pastel: #fde7ec;
+
   /* Badges laid over cover images */
   --color-overlay: rgba(0, 0, 0, 0.6);
   --color-status-in-progress: #e67e22;

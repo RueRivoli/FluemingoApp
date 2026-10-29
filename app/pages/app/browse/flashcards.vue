@@ -4,7 +4,7 @@ import { useAsyncData } from "#imports";
 import FlashcardDeckCard from "~/components/flashcards/FlashcardDeckCard.vue";
 import { useUserStore } from "~/stores/user";
 import * as flashcardService from "~/services/flashcardService";
-import { FLASHCARD_DECKS } from "~/utils/flashcardDecks";
+import { FLASHCARD_DECKS, flashcardDeckPath } from "~/utils/flashcardDecks";
 
 useHead({ title: "Flashcards — Fluemingo" });
 
@@ -37,16 +37,21 @@ const { data: counts, error } = await useAsyncData(
     <div
       class="grid max-w-190 grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))] gap-4"
     >
-      <FlashcardDeckCard
+      <NuxtLink
         v-for="deck in FLASHCARD_DECKS"
         :key="deck.status"
-        :status="deck.status"
-        :title="deck.title"
-        :subtitle="deck.subtitle"
-        :icon="deck.icon"
-        :image-url="deck.imageUrl"
-        :count="counts?.[deck.status] ?? null"
-      />
+        :to="flashcardDeckPath(deck.status)"
+        class="block rounded-xl no-underline"
+      >
+        <FlashcardDeckCard
+          :status="deck.status"
+          :title="deck.title"
+          :subtitle="deck.subtitle"
+          :icon="deck.icon"
+          :image-url="deck.imageUrl"
+          :count="counts?.[deck.status] ?? null"
+        />
+      </NuxtLink>
     </div>
   </section>
 </template>

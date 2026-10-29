@@ -1,5 +1,6 @@
 import { useSupabase } from "~/composables/useSupabase";
 import { languageTable } from "~/services/languageTables";
+import { flashcardToVocabularyItem } from "~/services/flashcardService";
 import { useUserStore } from "~/stores/user";
 import { NEWS_CONTENT_TYPE } from "~/utils/articles";
 import { VIDEOS_CONTENT_TYPE } from "~/utils/videos";
@@ -54,25 +55,6 @@ function vocabularyToVocabularyItem(
     flashcardId: flashcard?.id,
     status: flashcard?.status ?? null,
     isAddedByUser: false,
-  };
-}
-
-/** Maps a flashcard row to the VocabularyItem the app displays. */
-function flashcardToVocabularyItem(row: Flashcard): VocabularyItem {
-  return {
-    id: row.id,
-    text: row.text ?? "",
-    type: row.function,
-    translation: row.text_translation,
-    audioUrl: row.audio_url,
-    exampleSentence: row.example,
-    exampleTranslation: row.example_translation,
-    basis: row.basis,
-    note: null,
-    properName: row.proper_name ?? false,
-    flashcardId: row.id,
-    status: row.status,
-    isAddedByUser: row.vocabulary_id === null,
   };
 }
 

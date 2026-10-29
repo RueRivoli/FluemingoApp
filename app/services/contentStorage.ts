@@ -4,6 +4,9 @@ import { useSupabase } from "~/composables/useSupabase";
 // (e.g. "articles/fr/rap/image.png", "videos/fr/<id>/vocabulary/word.mp3").
 const CONTENT_BUCKET = "content";
 const ABSOLUTE_URL = /^https?:\/\//;
+// Some rows (flashcards especially) store "/content/…" or "content/…": the
+// bucket name is not part of the object path, as in the mobile app.
+const BUCKET_PREFIX = new RegExp(`^/?(${CONTENT_BUCKET}/)?`);
 
 /**
  * Turns a storage path of the content bucket into a public URL;
@@ -13,8 +16,9 @@ const ABSOLUTE_URL = /^https?:\/\//;
 export function toContentFileUrl(path: string | null): string | null {
   if (!path) return null;
   if (ABSOLUTE_URL.test(path)) return path;
-  return useSupabase().storage.from(CONTENT_BUCKET).getPublicUrl(path).data
-    .publicUrl;
+  const objectPath = path.replace(BUCKET_PREFIX, "");
+  return useSupabase().storage.from(CONTENT_BUCKET).getPublicUrl(objectPath)
+    .data.publicUrl;
 }
 
 /**
