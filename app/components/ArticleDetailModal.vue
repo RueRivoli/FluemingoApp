@@ -242,6 +242,7 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
           <VocabularyList
             :main-words="mainVocabulary"
             :personal-words="personalVocabulary"
+            :max-columns="2"
             @play-audio="(word) => emit('playAudio', word)"
             @toggle-saved="(word, saved) => emit('toggleSaved', word, saved)"
           />

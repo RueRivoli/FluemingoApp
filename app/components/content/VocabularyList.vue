@@ -10,6 +10,7 @@
  *   :personal-words="myWords"
  *   :saved-ids="savedIds"
  *   :playing-id="playingWordId"
+ *   :max-columns="2"
  *   @play-audio="play"
  *   @toggle-saved="(word, saved) => …"
  * />
@@ -27,6 +28,8 @@ interface Props {
   savedIds?: readonly number[];
   /** Id of the word whose pronunciation is playing; null when none */
   playingId?: number | null;
+  /** Upper bound on the grid columns (fewer on narrow screens); no bound when null */
+  maxColumns?: number | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -34,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   personalWords: () => [],
   savedIds: () => [],
   playingId: null,
+  maxColumns: null,
 });
 
 const emit = defineEmits<{
@@ -58,6 +62,10 @@ const activeTab = ref<TabId>("main");
 
 const words = computed(() =>
   activeTab.value === "main" ? props.mainWords : props.personalWords,
+);
+// Read by the grid's CSS; without a bound, as many 280px columns as fit.
+const gridStyle = computed(() =>
+  props.maxColumns ? { "--vocabulary-list-max-columns": props.maxColumns } : {},
 );
 const emptyMessage = computed(
   () => TABS.find((tab) => tab.id === activeTab.value)?.empty ?? "",
@@ -86,7 +94,12 @@ const emptyMessage = computed(
     </div>
 
     <div role="tabpanel" data-testid="vocabulary-list-panel">
-      <div v-if="words.length > 0" class="vocabulary-list__grid">
+      <div
+        v-if="words.length > 0"
+        :class="['vocabulary-list__grid', { 'vocabulary-list__grid--bounded': maxColumns }]"
+        :style="gridStyle"
+        data-testid="vocabulary-list-grid"
+      >
         <VocabularyCard
           v-for="word in words"
           :key="word.id"
@@ -149,9 +162,28 @@ const emptyMessage = computed(
 }
 
 .vocabulary-list__grid {
+  --vocabulary-list-column-gap: 16px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 12px 16px;
+  gap: 12px var(--vocabulary-list-column-gap);
+}
+
+/* A column is never narrower than 1/N of the row, so at most N fit; below
+   280px per column it still drops to fewer. */
+.vocabulary-list__grid--bounded {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(
+        min(100%, 280px),
+        calc(
+          (100% - (var(--vocabulary-list-max-columns) - 1) * var(--vocabulary-list-column-gap)) /
+            var(--vocabulary-list-max-columns)
+        )
+      ),
+      1fr
+    )
+  );
 }
 
 .vocabulary-list__empty {

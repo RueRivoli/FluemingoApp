@@ -8,6 +8,7 @@
  * - Saved state of each card from savedIds
  * - Playing state of the card matching playingId
  * - "playAudio" and "toggleSaved" re-emitted with the word
+ * - maxColumns: bounds the grid columns only when given
  */
 import { mount } from "@vue/test-utils";
 import { vocabularyItem } from "../../../tests/fixtures/vocabulary";
@@ -84,6 +85,22 @@ describe("VocabularyList", () => {
 
       const pressed = wrapper.findAll(sel("vocabulary-card-save")).map((button) => button.attributes("aria-pressed"));
       expect(pressed).toEqual(["false", "true"]);
+    });
+  });
+
+  describe("columns", () => {
+    it("bounds the grid to maxColumns columns", () => {
+      const grid = factory({ maxColumns: 2 }).get('[data-testid="vocabulary-list-grid"]');
+
+      expect(grid.classes()).toContain("vocabulary-list__grid--bounded");
+      expect(grid.attributes("style")).toContain("--vocabulary-list-max-columns: 2");
+    });
+
+    it("fits as many columns as possible by default", () => {
+      const grid = factory().get('[data-testid="vocabulary-list-grid"]');
+
+      expect(grid.classes()).not.toContain("vocabulary-list__grid--bounded");
+      expect(grid.attributes("style")).toBeUndefined();
     });
   });
 
